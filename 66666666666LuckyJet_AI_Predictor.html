@@ -1,0 +1,824 @@
+<!DOCTYPE html><html lang="fr"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LuckyJet - Prédiction Automatique</title>
+    <style>
+        :root {
+            --primary-color: #8a00e1;
+            --primary-dark: #6b00b3;
+            --success-color: #00FF00;
+            --text-color: #ffffff;
+            --bg-color: #141414;
+            --accent-color: blueviolet;
+            --warning-color: #ffcc00;
+            --info-color: #0096FF;
+            --wait-color: #FFA500;
+            --validation-color: #FF69B4;
+            --state-check-color: #00FFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #121212 100%);
+            color: var(--text-color);
+            text-align: center;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            animation: fadeIn 1.2s ease-in-out;
+            padding: 20px;
+            max-width: 100%;
+            z-index: 1;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--opacity);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); }
+            50% { opacity: 0.2; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .circle-wrapper {
+            position: relative;
+            display: inline-block;
+            animation: floatAnimation 4s ease-in-out infinite;
+            margin: 30px 0;
+        }
+
+        @keyframes floatAnimation {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .circle-outer {
+            border: 6px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 240px;
+            height: 240px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow:
+                0 0 25px rgba(255, 255, 255, 0.3),
+                inset 0 0 15px rgba(138, 0, 225, 0.5);
+            position: relative;
+            background: rgba(20, 20, 20, 0.5);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .circle-outer:hover {
+            transform: scale(1.03);
+            box-shadow:
+                0 0 35px rgba(255, 255, 255, 0.4),
+                inset 0 0 20px rgba(138, 0, 225, 0.7);
+        }
+
+        .circle-inner {
+            border: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 210px;
+            height: 210px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 42px;
+            color: var(--success-color);
+            font-weight: bold;
+            position: relative;
+            animation: glowPulse 2s infinite;
+            background: rgba(10, 10, 20, 0.7);
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            box-shadow: inset 0 0 20px rgba(138, 0, 225, 0.3);
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                box-shadow: inset 0 0 20px rgba(138, 0, 225, 0.3);
+                text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            }
+            50% {
+                box-shadow: inset 0 0 30px rgba(138, 0, 225, 0.7);
+                text-shadow: 0 0 15px rgba(0, 255, 0, 1);
+            }
+        }
+
+        .circle-outer::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top: 2px solid rgba(255, 255, 255, 0.7);
+            border-right: 2px solid var(--primary-color);
+            animation: spin 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .time {
+            font-size: 26px;
+            margin-bottom: 12px;
+            transition: all 0.5s;
+            background: linear-gradient(to right, #ffffff, #8a00e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .promo {
+            font-size: 20px;
+            margin: 15px 0;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: glow 2s infinite alternate;
+        }
+
+        .promo span.label {
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .promo strong {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 22px;
+            margin-left: 10px;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(138, 0, 225, 0.5); }
+            to { box-shadow: 0 0 20px rgba(138, 0, 225, 0.8); }
+        }
+
+        .luckyjet {
+            font-size: 42px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(138, 0, 225, 0.7);
+            position: relative;
+            display: inline-block;
+        }
+
+        .lucky {
+            color: white;
+        }
+
+        .jet {
+            color: var(--primary-color);
+            position: relative;
+        }
+
+        .jet::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+        }
+
+        .logo {
+            position: absolute;
+            right: -15px;
+            top: 10%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: auto;
+            animation: spinAndGlow 7s linear infinite;
+            filter: drop-shadow(0 0 8px rgba(138, 0, 225, 0.7));
+            z-index: 3;
+        }
+
+        @keyframes spinAndGlow {
+            0% {
+                transform: rotate(0deg) scale(1);
+                filter: drop-shadow(0 0 8px rgba(138, 0, 225, 0.5));
+            }
+            50% {
+                transform: rotate(180deg) scale(1.1);
+                filter: drop-shadow(0 0 15px rgba(138, 0, 225, 0.8));
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+                filter: drop-shadow(0 0 8px rgba(138, 0, 225, 0.5));
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            10% { transform: scale(1.1); }
+            20% { transform: scale(1); }
+            30% { transform: scale(1.1); }
+            40% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s;
+        }
+
+        @media (max-width: 768px) {
+            .circle-outer {
+                width: 200px;
+                height: 200px;
+            }
+
+            .circle-inner {
+                width: 175px;
+                height: 175px;
+                font-size: 36px;
+            }
+
+            .luckyjet {
+                font-size: 36px;
+            }
+
+            .time, .countdown {
+                font-size: 22px;
+            }
+
+            .promo {
+                font-size: 18px;
+            }
+
+            .logo {
+                width: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .circle-outer {
+                width: 180px;
+                height: 180px;
+            }
+
+            .circle-inner {
+                width: 155px;
+                height: 155px;
+                font-size: 32px;
+            }
+
+            .luckyjet {
+                font-size: 32px;
+            }
+
+            .time, .countdown {
+                font-size: 20px;
+            }
+        }
+
+        .status-indicator {
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            display: inline-block;
+        }
+
+        .betting-time-display {
+            font-size: 20px;
+            margin: 15px 0;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: glow 2s infinite alternate;
+        }
+        
+        .betting-time-display strong {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .betting-countdown-display {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #fff;
+            font-weight: bold;
+            min-height: 24px;
+        }
+
+        .betting-countdown-display.ready {
+            color: var(--success-color);
+        }
+        
+        .betting-countdown-display.red {
+            color: #ff5555;
+        }
+
+        .monitoring-info {
+            font-size: 16px;
+            margin-top: 10px;
+            padding: 5px 15px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00FFFF;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <div class="luckyjet">
+            <span class="lucky">LUCKY</span><span class="jet">JET PREDICTOR</span>
+        </div>
+
+        <div class="circle-wrapper">
+            <div class="circle-outer">
+                <div class="circle-inner">
+                    <span id="multiplier" style="color: var(--success-color);">0.00X</span>
+                </div>
+            </div>
+            <img src="https://1win-gn.com/wp-content/uploads/2024/02/lucky-jet-1win-header.webp" class="logo" alt="Logo animé violet tournant avec effet de lueur autour, style futuriste">
+        </div>
+
+        <div class="time" id="time">Temps actuel: 00:00</div>
+
+        <div class="promo">
+            <span class="label">Dernier Coef.</span>
+            <strong id="last-coefficient-display">--.--X</strong>
+        </div>
+        <div class="promo" id="ai-promo">
+            <span class="label">Coef. AI</span>
+            <strong id="ai-coefficient-display">--.--X</strong>
+        </div>
+        
+        <div class="betting-time-display">
+            <span style="color: #ffffff;">Heure de mise: </span>
+            <strong id="betting-time">00:00</strong>
+        </div>
+        
+        <div class="betting-countdown-display" id="countdown-display"></div>
+        
+        <div class="monitoring-info" id="monitoring-info" style="display: none;"></div>
+
+        <div class="status-indicator" id="statusIndicator">
+            <i class="fas fa-sync fa-spin"></i> Analyse en cours...
+        </div>
+    </div>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Configuration de la nouvelle API
+        const apiURL = "https://crash-gateway-grm-cr.100hp.app/state";
+        const headers = {
+            'customer-id': '077dee8d-c923-4c02-9bee-757573662e69',
+            'session-id': '0f4fc4fa-49aa-408d-9813-adee691e7172',
+            'accept': 'application/json',
+        };
+
+        // Variables globales
+        let coefficientsHistory = [];
+        let isPredictionActive = false;
+        let currentPrediction = null;
+        let verificationInterval = null;
+        let lastKnownCoefficient = null;
+        let monitoringStartTime = null;
+        let monitoringEndTime = null;
+        let observedCoefficients = [];
+        let countdownInterval = null;
+
+        // Au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            updateCurrentTime();
+            fetchCoefficients();
+
+            setInterval(updateCurrentTime, 1000);
+            setInterval(fetchCoefficients, 5000);
+        });
+
+        // Créer les étoiles en arrière-plan
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numberOfStars = 100;
+
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3;
+                const duration = 2 + Math.random() * 4;
+                const opacity = 0.2 + Math.random() * 0.8;
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--opacity', opacity);
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Mettre à jour l'heure actuelle
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('time').textContent = `Temps actuel: ${hours}:${minutes}:${seconds}`;
+        }
+        
+        // Récupérer les coefficients via la nouvelle API
+        async function fetchCoefficients() {
+            if (isPredictionActive) {
+                try {
+                    const coefficient = await fetchStopCoefficient();
+                    if (coefficient !== null) {
+                        document.getElementById('last-coefficient-display').textContent = coefficient.toFixed(2) + 'X';
+                        
+                        // Si on est en période de surveillance, enregistrer le coefficient
+                        if (monitoringStartTime && monitoringEndTime) {
+                            const now = new Date();
+                            if (now >= monitoringStartTime && now <= monitoringEndTime) {
+                                if (!observedCoefficients.includes(coefficient)) {
+                                    observedCoefficients.push(coefficient);
+                                    console.log(`Nouveau coefficient observé: ${coefficient.toFixed(2)}X`);
+                                    
+                                    // Vérifier si ce coefficient atteint ou dépasse notre prédiction
+                                    if (coefficient >= currentPrediction.value) {
+                                        console.log(`Coefficient ${coefficient.toFixed(2)}X atteint la prédiction ${currentPrediction.value.toFixed(2)}X`);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error("Erreur:", error);
+                }
+                return;
+            }
+
+            try {
+                const coefficient = await fetchStopCoefficient();
+                if (coefficient !== null) {
+                    document.getElementById('last-coefficient-display').textContent = coefficient.toFixed(2) + 'X';
+                    lastKnownCoefficient = coefficient;
+
+                    coefficientsHistory.unshift(coefficient);
+                    if (coefficientsHistory.length > 3) {
+                        coefficientsHistory.pop();
+                    }
+
+                    document.getElementById('statusIndicator').innerHTML =
+                        `<i class="fas fa-check-circle"></i> ${coefficientsHistory.length}/3 coefficients`;
+
+                    if (coefficientsHistory.length === 3) {
+                        if (coefficientsHistory.every(coef => coef >= 1.50)) {
+                            startPrediction();
+                        } else {
+                            document.getElementById('statusIndicator').innerHTML =
+                                `<i class="fas fa-sync fa-spin"></i> Analyse en cours...`;
+                            coefficientsHistory = [];
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Erreur:", error);
+                document.getElementById('statusIndicator').innerHTML =
+                    `<i class="fas fa-exclamation-triangle"></i> Erreur API, réessai...`;
+            }
+        }
+
+        async function fetchStopCoefficient() {
+            try {
+                const response = await fetch(apiURL, { headers });
+                if (!response.ok) throw new Error("Erreur API");
+                const data = await response.json();
+                return data.stopCoefficients?.[0] ?? null;
+            } catch (error) {
+                console.error("Erreur :", error);
+                return null;
+            }
+        }
+
+        // Démarrer une nouvelle prédiction
+        function startPrediction() {
+            if (isPredictionActive) return;
+
+            isPredictionActive = true;
+            observedCoefficients = [];
+            
+            const predictedValue = (Math.random() * (2.50 - 2.00) + 2.00);
+            
+            const bettingTime = new Date();
+            const minutesToAdd = Math.random() < 0.5 ? 2 : 3;
+            bettingTime.setMinutes(bettingTime.getMinutes() + minutesToAdd);
+            bettingTime.setSeconds(0); // Commencer pile à la minute
+            
+            // Définir les périodes de surveillance
+            monitoringStartTime = new Date(bettingTime);
+            monitoringEndTime = new Date(bettingTime.getTime() + 60000); // +1 minute
+            
+            const formattedHours = bettingTime.getHours().toString().padStart(2, '0');
+            const formattedMinutes = bettingTime.getMinutes().toString().padStart(2, '0');
+
+            document.getElementById('betting-time').textContent = `${formattedHours}:${formattedMinutes}`;
+
+            currentPrediction = {
+                value: predictedValue,
+                bettingTime: bettingTime
+            };
+
+            const multiplierElement = document.getElementById('multiplier');
+            multiplierElement.textContent = predictedValue.toFixed(2) + 'X';
+            
+            const circleInner = document.querySelector('.circle-inner');
+            circleInner.style.color = 'var(--success-color)';
+            circleInner.style.textShadow = '0 0 10px rgba(0, 255, 0, 0.7)';
+
+            document.getElementById('statusIndicator').innerHTML =
+                `<i class="fas fa-bolt"></i> Prédiction active: ${predictedValue.toFixed(2)}X`;
+            
+            // Démarrer le compte à rebours
+            startCountdown();
+            
+            // Programmer la surveillance
+            const timeUntilMonitoring = monitoringStartTime.getTime() - new Date().getTime();
+            
+            setTimeout(() => {
+                startMonitoring();
+            }, Math.max(timeUntilMonitoring, 0));
+        }
+
+        function startCountdown() {
+            const countdownDisplay = document.getElementById('countdown-display');
+            
+            countdownInterval = setInterval(() => {
+                const now = new Date();
+                const timeUntilBetting = monitoringStartTime.getTime() - now.getTime();
+                
+                if (timeUntilBetting > 0) {
+                    const minutes = Math.floor(timeUntilBetting / 60000);
+                    const seconds = Math.floor((timeUntilBetting % 60000) / 1000);
+                    
+                    countdownDisplay.textContent = `Démarrage dans: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    countdownDisplay.className = 'betting-countdown-display';
+                } else if (now <= monitoringEndTime) {
+                    const timeRemaining = monitoringEndTime.getTime() - now.getTime();
+                    const seconds = Math.floor(timeRemaining / 1000);
+                    
+                    countdownDisplay.textContent = `Surveillance active: ${seconds}s restantes`;
+                    countdownDisplay.className = 'betting-countdown-display ready';
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownDisplay.textContent = '';
+                }
+            }, 1000);
+        }
+
+        function startMonitoring() {
+            document.getElementById('statusIndicator').innerHTML = 
+                `<i class="fas fa-eye"></i> Surveillance en cours...`;
+            
+            // Masquer les informations de surveillance pendant la surveillance
+            const monitoringInfo = document.getElementById('monitoring-info');
+            monitoringInfo.style.display = 'none';
+            
+            console.log(`Début de la surveillance de ${monitoringStartTime.toLocaleTimeString()} à ${monitoringEndTime.toLocaleTimeString()}`);
+            console.log(`Prédiction à vérifier: ${currentPrediction.value.toFixed(2)}X`);
+            
+            // Surveiller toutes les secondes pendant la minute
+            verificationInterval = setInterval(async () => {
+                const now = new Date();
+                
+                // Si la minute de surveillance est terminée
+                if (now > monitoringEndTime) {
+                    clearInterval(verificationInterval);
+                    evaluatePrediction();
+                    return;
+                }
+
+                // Récupérer le coefficient actuel
+                try {
+                    const response = await fetch(apiURL, { headers });
+                    if (!response.ok) throw new Error("Erreur API");
+                    const data = await response.json();
+                    
+                    const latestCoefficient = data.stopCoefficients?.[0] ?? null;
+                    
+                    if (latestCoefficient !== null) {
+                        // Ajouter le coefficient s'il n'est pas déjà enregistré
+                        if (!observedCoefficients.includes(latestCoefficient)) {
+                            observedCoefficients.push(latestCoefficient);
+                            console.log(`Nouveau coefficient observé: ${latestCoefficient.toFixed(2)}X (${observedCoefficients.length} total)`);
+                        }
+                        
+                        // Mettre à jour l'affichage
+                        document.getElementById('last-coefficient-display').textContent = latestCoefficient.toFixed(2) + 'X';
+                    }
+
+                } catch (error) {
+                    console.error("Erreur lors de la surveillance:", error);
+                }
+            }, 1000);
+        }
+
+        function evaluatePrediction() {
+            console.log(`Fin de la surveillance. Coefficients observés: [${observedCoefficients.map(c => c.toFixed(2)).join(', ')}]`);
+            console.log(`Prédiction: ${currentPrediction.value.toFixed(2)}X`);
+            
+            // Vérifier si au moins un coefficient a atteint la prédiction
+            const successfulCoefficients = observedCoefficients.filter(coef => coef >= currentPrediction.value);
+            
+            if (successfulCoefficients.length > 0) {
+                const bestCoefficient = Math.max(...successfulCoefficients);
+                console.log(`Prédiction VALIDÉE! Meilleur coefficient: ${bestCoefficient.toFixed(2)}X`);
+                handleValidationSuccess(bestCoefficient, successfulCoefficients.length);
+            } else {
+                const bestObserved = observedCoefficients.length > 0 ? Math.max(...observedCoefficients) : 0;
+                console.log(`Prédiction ÉCHOUÉE. Meilleur observé: ${bestObserved.toFixed(2)}X`);
+                handleValidationFailure(bestObserved, observedCoefficients.length);
+            }
+        }
+
+        function handleValidationSuccess(bestCoefficient, successCount) {
+            const multiplierElement = document.getElementById('multiplier');
+            const circleInner = document.querySelector('.circle-inner');
+            
+            multiplierElement.textContent = 'VALIDÉ ✅';
+            circleInner.style.borderColor = '#00FF00';
+            circleInner.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)';
+            circleInner.style.color = '#00FF00';
+            circleInner.style.textShadow = '0 0 10px rgba(0, 255, 0, 0.7)';
+            
+            document.getElementById('statusIndicator').innerHTML =
+                `<i class="fas fa-check-circle"></i> Prédiction validée! Meilleur: ${bestCoefficient.toFixed(2)}X (${successCount} succès)`;
+            
+            const monitoringInfo = document.getElementById('monitoring-info');
+            monitoringInfo.textContent = `✅ ${successCount} coefficient(s) ont atteint ${currentPrediction.value.toFixed(2)}X`;
+            monitoringInfo.style.background = 'rgba(0, 255, 0, 0.1)';
+            monitoringInfo.style.borderColor = 'rgba(0, 255, 0, 0.3)';
+            monitoringInfo.style.color = '#00FF00';
+            
+            multiplierElement.classList.add('pulse');
+            setTimeout(resetPrediction, 5000);
+        }
+
+        function handleValidationFailure(bestObserved, totalObserved) {
+            const multiplierElement = document.getElementById('multiplier');
+            const circleInner = document.querySelector('.circle-inner');
+            
+            multiplierElement.textContent = 'ÉCHOUÉ ❌';
+            circleInner.style.borderColor = '#FF0000';
+            circleInner.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.5)';
+            circleInner.style.color = '#FF5555';
+            circleInner.style.textShadow = '0 0 10px rgba(255, 85, 85, 0.7)';
+            
+            document.getElementById('statusIndicator').innerHTML =
+                `<i class="fas fa-times-circle"></i> Prédiction échouée. Meilleur observé: ${bestObserved.toFixed(2)}X`;
+            
+            const monitoringInfo = document.getElementById('monitoring-info');
+            monitoringInfo.textContent = `❌ Aucun des ${totalObserved} coefficients n'a atteint ${currentPrediction.value.toFixed(2)}X`;
+            monitoringInfo.style.background = 'rgba(255, 0, 0, 0.1)';
+            monitoringInfo.style.borderColor = 'rgba(255, 0, 0, 0.3)';
+            monitoringInfo.style.color = '#FF5555';
+            
+            multiplierElement.classList.add('pulse');
+            setTimeout(resetPrediction, 5000);
+        }
+
+        // Réinitialiser la prédiction
+        function resetPrediction() {
+            const multiplierElement = document.getElementById('multiplier');
+            const circleInner = document.querySelector('.circle-inner');
+            
+            // Réinitialiser les styles
+            multiplierElement.classList.remove('pulse');
+            circleInner.style.borderColor = '';
+            circleInner.style.boxShadow = '';
+            circleInner.style.color = '';
+            circleInner.style.textShadow = '';
+            multiplierElement.textContent = '0.00X';
+            
+            // Réinitialiser les variables
+            coefficientsHistory = [];
+            isPredictionActive = false;
+            currentPrediction = null;
+            monitoringStartTime = null;
+            monitoringEndTime = null;
+            observedCoefficients = [];
+            
+            // Nettoyer les intervalles
+            if (verificationInterval) {
+                clearInterval(verificationInterval);
+                verificationInterval = null;
+            }
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            
+            // Réinitialiser l'affichage
+            document.getElementById('statusIndicator').innerHTML =
+                `<i class="fas fa-sync fa-spin"></i> Analyse en cours...`;
+            document.getElementById('statusIndicator').style.display = 'inline-block';
+            document.getElementById('countdown-display').textContent = '';
+            document.getElementById('betting-time').textContent = '00:00';
+            
+            // Relancer l'analyse
+            fetchCoefficients();
+        }
+    </script>
+    <script>
+        // AI Logic
+        let aiPrediction = null;
+        let aiEvaluated = false;
+
+        setInterval(() => {
+            const now = new Date();
+
+            if (isPredictionActive && currentPrediction && !aiPrediction) {
+                // Calculer la prédiction AI basée sur l'historique avec une variation
+                let avg = 2.00;
+                if (coefficientsHistory.length > 0) {
+                    avg = coefficientsHistory.reduce((sum, val) => sum + val, 0) / coefficientsHistory.length;
+                }
+                aiPrediction = Math.min(2.50, Math.max(2.00, avg + (Math.random() - 0.5) * 0.5));
+                document.getElementById('ai-coefficient-display').textContent = aiPrediction.toFixed(2) + 'X';
+                aiEvaluated = false;
+                document.getElementById('ai-promo').style.background = 'rgba(255, 255, 255, 0.1)';
+            } else if (isPredictionActive && monitoringEndTime && now > monitoringEndTime && !aiEvaluated && aiPrediction) {
+                aiEvaluated = true;
+                const successful = observedCoefficients.some(coef => coef >= aiPrediction);
+                if (successful) {
+                    document.getElementById('ai-coefficient-display').textContent = 'VALIDÉ ✅';
+                    document.getElementById('ai-promo').style.background = 'rgba(0, 255, 0, 0.1)';
+                } else {
+                    document.getElementById('ai-coefficient-display').textContent = 'ÉCHOUÉ ❌';
+                    document.getElementById('ai-promo').style.background = 'rgba(255, 0, 0, 0.1)';
+                }
+            } else if (!isPredictionActive && aiPrediction) {
+                aiPrediction = null;
+                aiEvaluated = false;
+                document.getElementById('ai-coefficient-display').textContent = '--.--X';
+                document.getElementById('ai-promo').style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+        }, 1000);
+    </script>
+
+</body></html>
