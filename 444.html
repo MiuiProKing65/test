@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Jet - 1win Game</title>
+    <style>
+        :root {
+            --primary-color: #8a00e1; /* Фиолетовый акцент с сайта */
+            --background-color: #1a2525; /* Темный фон, близкий к оригиналу */
+            --text-color: #ffffff; /* Белый текст */
+            --accent-dark: #6b00b3; /* Темный фиолетовый для градиента */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background-color);
+            background-image: radial-gradient(circle at 50% 50%, #2a3a3a 0%, #1a2525 100%); /* Градиент фона */
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .game-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(138, 0, 225, 0.5); /* Тень с фиолетовым оттенком */
+        }
+
+        .fallback-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-dark));
+            color: var(--text-color);
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 25px;
+            box-shadow: 0 0 10px rgba(138, 0, 225, 0.7);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .fallback-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(138, 0, 225, 1);
+            background: linear-gradient(45deg, var(--accent-dark), var(--primary-color));
+        }
+
+        @media (max-width: 768px) {
+            .fallback-button {
+                font-size: 16px;
+                padding: 8px 15px;
+            }
+
+            .game-iframe {
+                border-radius: 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fallback-button {
+                font-size: 14px;
+                padding: 6px 12px;
+                top: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <iframe class="game-iframe" src="https://1wdzjb.life/casino/play/v_1winGames:LuckyJet?p=8ah5" title="Lucky Jet Game"></iframe>
+    </div>
+    <a href="https://1wdzjb.life/casino/play/v_1winGames:LuckyJet?p=8ah5" class="fallback-button" target="_blank">Open Game in New Tab</a>
+</body>
+</html>
