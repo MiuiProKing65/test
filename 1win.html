@@ -1,0 +1,149 @@
+Ваш HTML-код представляет собой простую страницу для игры Lucky Jet с iframe, и вы хотите адаптировать её под разрешение iPhone 12 (включая Telegram Web App) и переместить кнопку "Open Game in New Tab" в центр. Давайте разберёмся с этим шаг за шагом.
+
+### Спецификации iPhone 12
+- **Разрешение экрана**: 1170 x 2532 пикселей (физическое), но с учётом масштабирования и viewport — около 390 x 844 пикселей в логических единицах (при `initial-scale=1.0`).
+- **Соотношение сторон**: ~19.5:9.
+- **Telegram Web App**: Ограничивает контент под размеры экрана устройства, поэтому нужно адаптировать размеры iframe и кнопку.
+
+### Изменения в коде
+1. **Адаптация под iPhone 12**:
+   - Установим максимальную ширину и высоту iframe, чтобы он корректно масштабировался.
+   - Добавим медиа-запросы для точной подгонки под 390px ширины (примерно ширина iPhone 12 в портретной ориентации).
+2. **Кнопка в центре**:
+   - Переместим `.fallback-button` из фиксированной позиции (слева/сверху) в центр экрана с использованием `position: absolute` и центрирования.
+3. **Оптимизация для Telegram**:
+   - Добавим базовую поддержку Telegram Web App для корректного отображения (скрипт и адаптация темы).
+
+### Обновленный HTML-код
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lucky Jet - 1win Game</title>
+    <style>
+        :root {
+            --primary-color: #8a00e1;
+            --background-color: #1a2525;
+            --text-color: #ffffff;
+            --accent-dark: #6b00b3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background-color);
+            background-image: radial-gradient(circle at 50% 50%, #2a3a3a 0%, #1a2525 100%);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 390px; /* Ширина iPhone 12 в логических пикселях */
+            height: 100vh;
+            max-height: 844px; /* Высота iPhone 12 в логических пикселях */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .game-iframe {
+            width: 100%;
+            height: 100%;
+            max-height: 80vh; /* Ограничиваем высоту для кнопки */
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(138, 0, 225, 0.5);
+        }
+
+        .fallback-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 12px 24px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-dark));
+            color: var(--text-color);
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 25px;
+            box-shadow: 0 0 10px rgba(138, 0, 225, 0.7);
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: none; /* Показываем только при ошибке загрузки */
+        }
+
+        .fallback-button.visible {
+            display: inline-block;
+        }
+
+        .fallback-button:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 0 15px rgba(138, 0, 225, 1);
+            background: linear-gradient(45deg, var(--accent-dark), var(--primary-color));
+        }
+
+        @media (max-width: 390px) {
+            .game-iframe {
+                border-radius: 5px;
+                max-height: 75vh; /* Подгонка под iPhone 12 */
+            }
+
+            .fallback-button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+
+        /* Поддержка Telegram Web App */
+        @supports (-webkit-overflow-scrolling: touch) {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            .game-container {
+                max-width: 100%;
+                max-height: 100%;
+            }
+        }
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Инициализация Telegram Web App
+        window.Telegram.WebApp.ready();
+
+        // Проверка загрузки iframe
+        document.getElementById('gameIframe').addEventListener('load', function() {
+            const fallbackButton = document.querySelector('.fallback-button');
+            try {
+                this.contentWindow.document;
+                fallbackButton.classList.remove('visible');
+            } catch (e) {
+                fallbackButton.classList.add('visible');
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="game-container">
+        <iframe class="game-iframe" id="gameIframe" src="https://1wdzjb.life/casino/play/v_1winGames:LuckyJet?p=8ah5" title="Lucky Jet Game"></iframe>
+    </div>
+    <a href="https://1wdzjb.life/casino/play/v_1winGames:LuckyJet?p=8ah5" class="fallback-button" target="_blank">Open Game in New Tab</a>
+</body>
+</html>
+```
+
