@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="title">ðŸš€ Robot de PrÃ©diction Pro1.1.3 - Version AmÃ©liorÃ©e</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+    }
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(-25%); }
+        50% { transform: translateY(0); }
+    }
+    .animate-bounce { animation: bounce 1s infinite; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    .countdown-container {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(145deg, #f3f4f6, #ffffff);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .coefficient-badge {
+        display: inline-block;
+        background: linear-gradient(145deg, #3B82F6, #1E40AF);
+        color: white;
+        border-radius: 9999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+        margin: 0.25rem;
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    .auto-fetch-container {
+        background: linear-gradient(145deg, #f0f4f8, #def1ff);
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    .predicted-rounds-container {
+        margin-top: 1.5rem;
+        padding: 1.2rem;
+        background: linear-gradient(145deg, #f0f9ff, #e0f2fe);
+        border-radius: 12px;
+        border: 1px solid #bae6fd;
+    }
+    
+    .round-badge {
+        display: inline-block;
+        background: linear-gradient(145deg, #1d4ed8, #3b82f6);
+        color: white;
+        border-radius: 8px;
+        padding: 0.5rem 1.2rem;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin: 0.3rem;
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+    }
+    
+    .verification-status {
+        padding: 0.5rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+    
+    .verification-in-progress {
+        background-color: #fffbeb;
+        color: #854d0e;
+        border: 1px solid #fde68a;
+    }
+    
+    .verification-success {
+        background-color: #dcfce7;
+        color: #166534;
+        border: 1px solid #86efac;
+    }
+    
+    .verification-failed {
+        background-color: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fca5a5;
+    }
+    
+    .round-indicator {
+        display: inline-block;
+        background: linear-gradient(145deg, #1d4ed8, #3b82f6);
+        color: white;
+        border-radius: 8px;
+        padding: 0.3rem 0.8rem;
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin: 0.1rem;
+    }
+    
+    .history-item {
+        transition: all 0.3s ease;
+    }
+    
+    .history-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .stats-card {
+        background: linear-gradient(145deg, #ffffff, #f9fafb);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        padding: 1.5rem;
+    }
+    
+    .robot-header {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-card {
+        background: linear-gradient(145deg, #f0f9ff, #e0f7fa);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        border: 1px solid #bae6fd;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .floating {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes glow {
+        0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+        50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+        100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+    }
+    
+    .glowing {
+        animation: glow 2s infinite;
+    }
+    
+    .confidence-level {
+        height: 10px;
+        border-radius: 5px;
+        background: linear-gradient(to right, #ef4444, #f59e0b, #10b981);
+    }
+    
+    .confidence-fill {
+        height: 100%;
+        border-radius: 5px;
+        background: #3b82f6;
+        transition: width 1s ease-in-out;
+    }
+    
+    .trend-indicator {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    
+    .trend-up {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+    
+    .trend-down {
+        background-color: #fee2e2;
+        color: #b91c1c;
+    }
+    
+    .trend-stable {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+    }
+    
+    .pattern-indicator {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-left: 5px;
+    }
+    
+    .pattern-bullish {
+        background-color: #dcfce7;
+        color: #166534;
+        border-left: 3px solid #10b981;
+    }
+    
+    .pattern-bearish {
+        background-color: #fee2e2;
+        color: #b91c1c;
+        border-left: 3px solid #ef4444;
+    }
+    
+    .pattern-neutral {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+        border-left: 3px solid #3b82f6;
+    }
+    
+    .duplicate-warning {
+        background-color: #fffbeb;
+        color: #854d0e;
+        border: 1px solid #fde68a;
+        padding: 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        text-align: center;
+        margin-top: 10px;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @media (max-width: 768px) {
+        #loginModal {
+            padding: 0;
+        }
+        
+        #loginModal > div {
+            min-height: 100%;
+            padding: 1rem;
+        }
+        
+        #loginModal > div > div {
+            margin: 0;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+    }
+
+    @media (min-width: 769px) {
+        #loginModal > div > div {
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 2rem auto;
+        }
+    }
+
+    #loginModal > div > div::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #loginModal > div > div::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    #loginModal > div > div::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    #loginModal > div > div::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #f0f9ff, #e6f7ff);
+        min-height: 100vh;
+    }
+    
+    .dashboard-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .gradient-btn {
+        background: linear-gradient(135deg, #3b82f6, #6366f1);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .gradient-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(59, 130, 246, 0.25);
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .status-pending {
+        background: #fffbeb;
+        color: #d97706;
+    }
+    
+    .status-success {
+        background: #dcfce7;
+        color: #166534;
+    }
+    
+    .status-failed {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+    
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        border-radius: 12px;
+        color: #4b5563;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+        background: #f3f4f6;
+        color: #1d4ed8;
+    }
+    
+    .nav-link.active {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+    
+    .lang-flag {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+    
+    /* Styles pour les drapeaux */
+    .flag-fr { background: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/fr.svg') center/cover no-repeat; }
+    .flag-en { background: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/gb.svg') center/cover no-repeat; } 
+    .flag-ru { background: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/ru.svg') center/cover no-repeat; }
+    .flag-hi { background: url('https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/in.svg') center/cover no-repeat; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<div id="languageModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4" style="display: none;" onclick="document.getElementById('languageModal').style.display='none';">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all scale-100" onclick="event.stopPropagation()">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center" data-translate="modal_title">
+            <i class="fas fa-globe text-blue-500 mr-2"></i>
+            Choisir votre langue
+        </h3>
+        <div class="space-y-4">
+            <button class="flex items-center w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200" onclick="setLanguage('fr')">
+                <div class="lang-flag flag-fr"></div>
+                <span class="font-semibold text-gray-800">FranÃ§ais</span>
+                <i class="fas fa-check ml-auto text-blue-500 hidden" id="check-fr"></i>
+            </button>
+            <button class="flex items-center w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200" onclick="setLanguage('en')">
+                <div class="lang-flag flag-en"></div>
+                <span class="font-semibold text-gray-800">English</span>
+                <i class="fas fa-check ml-auto text-blue-500 hidden" id="check-en"></i>
+            </button>
+            <button class="flex items-center w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200" onclick="setLanguage('ru')">
+                <div class="lang-flag flag-ru"></div>
+                <span class="font-semibold text-gray-800">Ð ÑƒÑÑÐºÐ¸Ð¹</span>
+                <i class="fas fa-check ml-auto text-blue-500 hidden" id="check-ru"></i>
+            </button>
+            <button class="flex items-center w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200" onclick="setLanguage('hi')">
+                <div class="lang-flag flag-hi"></div>
+                <span class="font-semibold text-gray-800">à¤¹à¤¿à¤¨à¥à¤¦à¥€</span>
+                <i class="fas fa-check ml-auto text-blue-500 hidden" id="check-hi"></i>
+            </button>
+        </div>
+        <button class="mt-6 w-full py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition" onclick="document.getElementById('languageModal').style.display='none';" data-translate="modal_close">
+            Fermer
+        </button>
+    </div>
+</div>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="robot-header text-center flex flex-col md:flex-row justify-between items-center relative">
+        <h1 class="text-3xl md:text-4xl font-bold flex items-center justify-center">
+            <i class="fas fa-robot mr-3 floating"></i>
+            <span data-translate="app_title">ðŸ¤– Predicteur Pro</span>
+            <span class="ml-3 bg-green-500 text-white text-sm px-3 py-1 rounded-full">V5.0</span>
+        </h1>
+        <p class="mt-2 text-blue-100 hidden md:block" data-translate="app_subtitle">Suivi automatique des prÃ©dictions avec analyse avancÃ©e amÃ©liorÃ©e</p>
+        
+        <button onclick="showLanguageModal()" class="mt-4 md:mt-0 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-2 px-4 rounded-full transition duration-300 flex items-center">
+            <i class="fas fa-globe mr-2"></i> 
+            <span id="currentLangDisplay">FR</span>
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+        <div class="lg:col-span-2">
+            <div class="dashboard-card p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6" data-translate="analysis_title">
+                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                    Analyse des CÃ´tes - Version AmÃ©liorÃ©e
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="feature-card">
+                        <label class="block text-gray-700 font-bold mb-3" data-translate="odds_label">
+                            <i class="fas fa-list-ol text-blue-500 mr-2"></i>
+                            CÃ´tes (min. 3)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="oddsInput" 
+                            data-translate-placeholder="odds_placeholder"
+                            placeholder="Ex: 1.50, 1.75, 2.00," 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                        >
+                    </div>
+                    
+                    <div class="feature-card">
+                        <label class="block text-gray-700 font-bold mb-3" data-translate="bet_label">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            Mise (â‚¬)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="betAmount" 
+                            data-translate-placeholder="bet_placeholder"
+                            placeholder="Montant Ã  miser" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                            min="0"
+                            step="0.01"
+                        >
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 mb-6">
+                    <button onclick="predictOdds()" class="flex-1 gradient-btn glowing" data-translate="analyze_btn">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Analyser
+                    </button>
+                    <button onclick="openAdvancedSettings()" class="bg-gradient-to-r from-green-500 to-teal-600 text-white py-3 px-6 rounded-lg hover:opacity-90 transition font-semibold" data-translate="options_btn">
+                        <i class="fas fa-cog mr-2"></i>
+                        Options
+                    </button>
+                </div>
+                
+                <div id="result" class="bg-gray-50 rounded-xl p-6 mt-4 border border-gray-200">
+                    <div class="text-center text-gray-500" data-translate="result_initial">
+                        Entrez vos cÃ´tes pour obtenir une prÃ©diction amÃ©liorÃ©e
+                    </div>
+                </div>
+                
+                <div class="auto-fetch-container mt-6">
+                    <div class="auto-fetch-header flex justify-between items-center">
+                        <div class="auto-fetch-title font-bold text-blue-800" data-translate="auto_fetch_title">
+                            <i class="fas fa-sync-alt mr-2"></i> RÃ©cupÃ©ration Automatique
+                        </div>
+                        <div class="auto-fetch-status text-gray-700" id="autoFetchStatus">
+                            <span class="auto-fetch-dot bg-red-500 rounded-full w-3 h-3 inline-block mr-2"></span>
+                            <span data-translate="inactive_status">Inactif</span>
+                        </div>
+                    </div>
+                    
+                    <div class="coefficients-display mt-4 bg-white rounded-lg p-4" id="coefficientsDisplay">
+                        <p class="text-center text-gray-500" data-translate="coefficients_initial">Les coefficients apparaÃ®tront ici</p>
+                    </div>
+                    
+                    <div class="flex gap-4 mt-4">
+                        <button onclick="startAutoFetch()" class="flex-1 gradient-btn" data-translate="start_btn">
+                            <i class="fas fa-play mr-2"></i> DÃ©marrer
+                        </button>
+                        <button onclick="stopAutoFetch()" class="flex-1 bg-gradient-to-r from-red-500 to-rose-600 text-white py-2 rounded-lg hover:opacity-90 transition font-semibold" data-translate="stop_btn">
+                            <i class="fas fa-stop mr-2"></i> ArrÃªter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <div class="stats-card mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4" data-translate="stats_title">
+                    <i class="fas fa-chart-pie text-purple-500 mr-2"></i>
+                    Statistiques Globales
+                </h3>
+                <div id="statsContainer" class="text-center">
+                    <p id="totalPredictions" class="text-3xl font-bold text-blue-600">0</p>
+                    <p id="predictionAccuracy" class="text-2xl font-bold text-green-600 mt-2">0%</p>
+                    <div class="grid grid-cols-3 gap-4 mt-4">
+                        <div class="bg-green-100 p-3 rounded-lg">
+                            <p class="text-lg font-bold text-green-800">âœ…</p>
+                            <p class="text-sm text-gray-700" data-translate="validated_stat">ValidÃ©es</p>
+                            <p id="successCount" class="font-bold">0</p>
+                        </div>
+                        <div class="bg-red-100 p-3 rounded-lg">
+                            <p class="text-lg font-bold text-red-800">âŒ</p>
+                            <p class="text-sm text-gray-700" data-translate="failed_stat">Ã‰chouÃ©es</p>
+                            <p id="failedCount" class="font-bold">0</p>
+                        </div>
+                        <div class="bg-yellow-100 p-3 rounded-lg">
+                            <p class="text-lg font-bold text-yellow-800">â³</p>
+                            <p class="text-sm text-gray-700" data-translate="pending_stat">En attente</p>
+                            <p id="pendingCount" class="font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800" data-translate="analysis_intelligence_title">
+                        <i class="fas fa-brain text-indigo-500 mr-2"></i>
+                        Analyse Intelligence
+                    </h3>
+                    <button onclick="analyzeHistoricalData()" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1 rounded-lg text-sm hover:opacity-90 transition" data-translate="refresh_btn">
+                        Actualiser
+                    </button>
+                </div>
+                <div id="intelligentAnalysis" class="text-sm space-y-3">
+                    <div class="animate-pulse text-gray-500" data-translate="analysis_initial">
+                        Cliquez sur Actualiser pour analyser les donnÃ©es
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800" data-translate="history_title">
+                        <i class="fas fa-history text-blue-500 mr-2"></i>
+                        Historique des PrÃ©dictions
+                    </h3>
+                    <button id="toggleHistory" class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1 rounded-lg text-sm hover:opacity-90 transition" onclick="toggleHistoryVisibility()" data-translate="hide_btn">
+                        Masquer
+                    </button>
+                </div>
+                <div id="predictionHistory" class="space-y-4 max-h-[500px] overflow-y-auto pr-2"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-card p-6 mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4" data-translate="chart_title">
+            <i class="fas fa-chart-bar text-green-500 mr-2"></i>
+            Ã‰volution des PrÃ©dictions
+        </h3>
+        <canvas id="statsChart" height="300"></canvas>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div class="feature-card">
+            <div class="text-blue-500 text-3xl mb-3">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h4 class="font-bold text-lg text-gray-800 mb-2" data-translate="feature1_title">Suivi Automatique</h4>
+            <p class="text-gray-600" data-translate="feature1_text">Le systÃ¨me vÃ©rifie automatiquement le succÃ¨s de chaque prÃ©diction sur les 5 rounds suivants.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="text-green-500 text-3xl mb-3">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h4 class="font-bold text-lg text-gray-800 mb-2" data-translate="feature2_title">IA AvancÃ©e</h4>
+            <p class="text-gray-600" data-translate="feature2_text">Algorithmes intelligents pour prÃ©dire les cÃ´tes avec une prÃ©cision optimale.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="text-purple-500 text-3xl mb-3">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h4 class="font-bold text-lg text-gray-800 mb-2" data-translate="feature3_title">Analyse en Temps RÃ©el</h4>
+            <p class="text-gray-600" data-translate="feature3_text">Visualisez l'Ã©volution de vos prÃ©dictions grÃ¢ce Ã  des graphiques interactifs.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- PARTIE TRADUCTION ET LANGUE ---
+    const defaultLang = 'fr';
+    // Utiliser null si aucune langue n'est enregistrÃ©e pour dÃ©clencher le modal
+    let currentLang = localStorage.getItem('userLanguage') || null; 
+
+    // Structure des traductions
+    const translations = {
+        fr: {
+            title: 'ðŸš€ Robot de PrÃ©diction Pro - Version AmÃ©liorÃ©e',
+            modal_title: 'Choisir votre langue',
+            modal_close: 'Fermer',
+            app_title: 'ðŸ¤– Predicteur Pro',
+            app_subtitle: 'Suivi automatique des prÃ©dictions avec analyse avancÃ©e amÃ©liorÃ©e',
+            analysis_title: 'Analyse des CÃ´tes - Version AmÃ©liorÃ©e',
+            odds_label: 'CÃ´tes (min. 3)',
+            odds_placeholder: 'Ex: 1.50, 1.75, 2.00,',
+            bet_label: 'Mise (â‚¬)',
+            bet_placeholder: 'Montant Ã  miser',
+            analyze_btn: 'Analyser',
+            options_btn: 'Options',
+            result_initial: 'Entrez vos cÃ´tes pour obtenir une prÃ©diction amÃ©liorÃ©e',
+            auto_fetch_title: 'RÃ©cupÃ©ration Automatique',
+            inactive_status: 'Inactif',
+            fetching_status: 'RÃ©cupÃ©ration en cours...',
+            coefficients_initial: 'Les coefficients apparaÃ®tront ici',
+            start_btn: 'DÃ©marrer',
+            stop_btn: 'ArrÃªter',
+            stats_title: 'Statistiques Globales',
+            validated_stat: 'ValidÃ©es',
+            failed_stat: 'Ã‰chouÃ©es',
+            pending_stat: 'En attente',
+            analysis_intelligence_title: 'Analyse Intelligence',
+            refresh_btn: 'Actualiser',
+            analysis_initial: 'Cliquez sur Actualiser pour analyser les donnÃ©es',
+            history_title: 'Historique des PrÃ©dictions',
+            hide_btn: 'Masquer',
+            show_btn: 'Afficher',
+            chart_title: 'Ã‰volution des PrÃ©dictions',
+            feature1_title: 'Suivi Automatique',
+            feature1_text: 'Le systÃ¨me vÃ©rifie automatiquement le succÃ¨s de chaque prÃ©diction sur les 5 rounds suivants.',
+            feature2_title: 'IA AvancÃ©e',
+            feature2_text: 'Algorithmes intelligents pour prÃ©dire les cÃ´tes avec une prÃ©cision optimale.',
+            feature3_title: 'Analyse en Temps RÃ©el',
+            feature3_text: 'Visualisez l\'Ã©volution de vos prÃ©dictions grÃ¢ce Ã  des graphiques interactifs.',
+            // Traductions SweetAlert
+            error_data_insufficient_title: 'DonnÃ©es Insuffisantes',
+            error_data_insufficient_text: 'Veuillez entrer au moins 3 cÃ´tes valides',
+            success_prediction_generated_title: 'PrÃ©diction GÃ©nÃ©rÃ©e!',
+            success_prediction_validated_title: 'PrÃ©diction validÃ©e!',
+            success_prediction_validated_text: 'La prÃ©diction $1 a Ã©tÃ© validÃ©e au Round $2',
+            error_prediction_failed_title: 'PrÃ©diction Ã©chouÃ©e',
+            error_prediction_failed_text: 'La prÃ©diction $1 n\'a pas Ã©tÃ© validÃ©e dans les 5 rounds',
+            success_fetch_start_title: 'RÃ©cupÃ©ration dÃ©marrÃ©e',
+            success_fetch_start_text: 'Les coefficients seront rÃ©cupÃ©rÃ©s automatiquement toutes les 5 secondes',
+            info_fetch_stop_title: 'RÃ©cupÃ©ration arrÃªtÃ©e',
+            warning_duplicate: 'Coefficient identique dÃ©tectÃ© dans un intervalle trop court (ignorÃ©)',
+            // Nouveaux Ã©lÃ©ments de prÃ©diction
+            predicted_odds: 'CÃ´te Probable',
+            success_probability: 'ProbabilitÃ© de RÃ©ussite',
+            potential_win: 'Gain Potentiel',
+            predicted_rounds_title: 'Rounds PrÃ©dits d\'Apparition',
+            confidence_label: 'Niveau de confiance',
+            trend_label: 'Tendance',
+            volatility_label: 'VolatilitÃ©',
+            trend_up: 'Hausse',
+            trend_down: 'Baisse',
+            trend_stable: 'Stable',
+            pattern_bullish: 'Tendance haussiÃ¨re',
+            pattern_bearish: 'Tendance baissiÃ¨re',
+            pattern_neutral: 'Pas de tendance claire',
+            verification_pending_text: 'VÃ©rification en cours... Round $1/5',
+            verification_success_text: 'âœ… ValidÃ© au Round $1',
+            verification_failed_text: 'âŒ Ã‰chouÃ© aprÃ¨s 5 rounds',
+            high_confidence_message: 'TrÃ¨s haute confiance - Cette prÃ©diction a une trÃ¨s forte probabilitÃ© d\'apparaÃ®tre rapidement.',
+            medium_high_confidence_message: 'Haute confiance - Cette prÃ©diction est trÃ¨s probable dans les rounds indiquÃ©s.',
+            medium_confidence_message: 'Confiance moyenne - Cette prÃ©diction devrait apparaÃ®tre dans les rounds indiquÃ©s.',
+            low_confidence_message: 'âš ï¸ Faible confiance - Ce type de pari prÃ©sente un risque plus Ã©levÃ©. ConsidÃ©rez un montant de mise rÃ©duit.',
+            moderate_confidence_message: 'Confiance modÃ©rÃ©e - Surveillez attentivement les rounds indiquÃ©s.',
+            // Analyse Intelligence
+            perf_title: 'Performance Moyenne',
+            perf_success_rate: 'Taux de rÃ©ussite',
+            perf_avg_confidence: 'Confiance moyenne des succÃ¨s',
+            best_odds_title: 'Meilleures CÃ´tes',
+            best_odds_optimal_range: 'Plage optimale',
+            best_odds_distribution: 'RÃ©partition des succÃ¨s',
+            historical_analysis_title: 'Analyse Historique',
+            historical_summary: '$1 prÃ©dictions rÃ©ussies sur $2 au total',
+            // Options
+            options_analysis_mode: "Mode d'Analyse",
+            options_mode_standard: "Standard (Moyenne simple)",
+            options_mode_advanced: "AvancÃ© (PondÃ©ration adaptative)",
+            options_mode_pro: "Professionnel (Analyse complÃ¨te)",
+            options_analysis_options: "Options d'Analyse",
+            options_exclude_extremes: "Exclure les valeurs extrÃªmes",
+            options_trend_analysis: "Analyse tendancielle",
+            options_volatility_threshold: "Seuil de volatilitÃ©",
+            options_save: 'Sauvegarder',
+            options_cancel: 'Annuler',
+            options_saved: 'ParamÃ¨tres sauvegardÃ©s',
+            // Dynamique
+            coeffs_remaining: '$1 coefficient(s) restant(s) avant prÃ©diction'
+        },
+        en: {
+            title: 'ðŸš€ Pro Prediction Robot - Improved Version',
+            modal_title: 'Choose your language',
+            modal_close: 'Close',
+            app_title: 'ðŸ¤– Pro Predictor',
+            app_subtitle: 'Automatic prediction tracking with enhanced advanced analysis',
+            analysis_title: 'Odds Analysis - Improved Version',
+            odds_label: 'Odds (min. 3)',
+            odds_placeholder: 'Ex: 1.50, 1.75, 2.00,',
+            bet_label: 'Bet Amount (â‚¬)',
+            bet_placeholder: 'Amount to bet',
+            analyze_btn: 'Analyze',
+            options_btn: 'Options',
+            result_initial: 'Enter your odds to get an improved prediction',
+            auto_fetch_title: 'Automatic Fetching',
+            inactive_status: 'Inactive',
+            fetching_status: 'Fetching in progress...',
+            coefficients_initial: 'Coefficients will appear here',
+            start_btn: 'Start',
+            stop_btn: 'Stop',
+            stats_title: 'Global Statistics',
+            validated_stat: 'Validated',
+            failed_stat: 'Failed',
+            pending_stat: 'Pending',
+            analysis_intelligence_title: 'Intelligence Analysis',
+            refresh_btn: 'Refresh',
+            analysis_initial: 'Click Refresh to analyze data',
+            history_title: 'Prediction History',
+            hide_btn: 'Hide',
+            show_btn: 'Show',
+            chart_title: 'Prediction Evolution',
+            feature1_title: 'Automatic Tracking',
+            feature1_text: 'The system automatically checks the success of each prediction over the next 5 rounds.',
+            feature2_title: 'Advanced AI',
+            feature2_text: 'Intelligent algorithms to predict odds with optimal accuracy.',
+            feature3_title: 'Real-Time Analysis',
+            feature3_text: 'Visualize the evolution of your predictions with interactive charts.',
+            // Traductions SweetAlert
+            error_data_insufficient_title: 'Insufficient Data',
+            error_data_insufficient_text: 'Please enter at least 3 valid odds',
+            success_prediction_generated_title: 'Prediction Generated!',
+            success_prediction_validated_title: 'Prediction Validated!',
+            success_prediction_validated_text: 'Prediction $1 was validated in Round $2',
+            error_prediction_failed_title: 'Prediction Failed',
+            error_prediction_failed_text: 'Prediction $1 was not validated within 5 rounds',
+            success_fetch_start_title: 'Fetching Started',
+            success_fetch_start_text: 'Coefficients will be automatically fetched every 5 seconds',
+            info_fetch_stop_title: 'Fetching Stopped',
+            warning_duplicate: 'Identical coefficient detected in too short an interval (ignored)',
+            // Nouveaux Ã©lÃ©ments de prÃ©diction
+            predicted_odds: 'Probable Odds',
+            success_probability: 'Success Probability',
+            potential_win: 'Potential Win',
+            predicted_rounds_title: 'Predicted Appearance Rounds',
+            confidence_label: 'Confidence Level',
+            trend_label: 'Trend',
+            volatility_label: 'Volatility',
+            trend_up: 'Up',
+            trend_down: 'Down',
+            trend_stable: 'Stable',
+            pattern_bullish: 'Bullish Trend',
+            pattern_bearish: 'Bearish Trend',
+            pattern_neutral: 'No Clear Trend',
+            verification_pending_text: 'Verification in progress... Round $1/5',
+            verification_success_text: 'âœ… Validated in Round $1',
+            verification_failed_text: 'âŒ Failed after 5 rounds',
+            high_confidence_message: 'Very high confidence - This prediction has a very strong chance of appearing quickly.',
+            medium_high_confidence_message: 'High confidence - This prediction is very likely in the indicated rounds.',
+            medium_confidence_message: 'Average confidence - This prediction should appear in the indicated rounds.',
+            low_confidence_message: 'âš ï¸ Low confidence - This type of bet carries a higher risk. Consider a reduced bet amount.',
+            moderate_confidence_message: 'Moderate confidence - Monitor the indicated rounds carefully.',
+            // Analyse Intelligence
+            perf_title: 'Average Performance',
+            perf_success_rate: 'Success Rate',
+            perf_avg_confidence: 'Average Success Confidence',
+            best_odds_title: 'Best Odds',
+            best_odds_optimal_range: 'Optimal Range',
+            best_odds_distribution: 'Success Distribution',
+            historical_analysis_title: 'Historical Analysis',
+            historical_summary: '$1 successful predictions out of $2 total',
+            // Options
+            options_analysis_mode: "Analysis Mode",
+            options_mode_standard: "Standard (Simple Average)",
+            options_mode_advanced: "Advanced (Adaptive Weighting)",
+            options_mode_pro: "Professional (Complete Analysis)",
+            options_analysis_options: "Analysis Options",
+            options_exclude_extremes: "Exclude extreme values",
+            options_trend_analysis: "Trend analysis",
+            options_volatility_threshold: "Volatility Threshold",
+            options_save: 'Save',
+            options_cancel: 'Cancel',
+            options_saved: 'Settings saved',
+            // Dynamique
+            coeffs_remaining: '$1 coefficient(s) remaining before prediction'
+        },
+        ru: {
+            title: 'ðŸš€ Ð Ð¾Ð±Ð¾Ñ‚-Ð¿Ñ€ÐµÐ´ÑÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Pro - Ð£Ð»ÑƒÑ‡ÑˆÐµÐ½Ð½Ð°Ñ Ð²ÐµÑ€ÑÐ¸Ñ',
+            modal_title: 'Ð’Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ ÑÐ·Ñ‹Ðº',
+            modal_close: 'Ð—Ð°ÐºÑ€Ñ‹Ñ‚ÑŒ',
+            app_title: 'ðŸ¤– Pro ÐŸÑ€ÐµÐ´ÑÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ',
+            app_subtitle: 'ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ðµ Ð¾Ñ‚ÑÐ»ÐµÐ¶Ð¸Ð²Ð°Ð½Ð¸Ðµ Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð·Ð¾Ð² Ñ ÑƒÐ»ÑƒÑ‡ÑˆÐµÐ½Ð½Ñ‹Ð¼ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð½Ñ‹Ð¼ Ð°Ð½Ð°Ð»Ð¸Ð·Ð¾Ð¼',
+            analysis_title: 'ÐÐ½Ð°Ð»Ð¸Ð· ÐšÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð¾Ð² - Ð£Ð»ÑƒÑ‡ÑˆÐµÐ½Ð½Ð°Ñ Ð²ÐµÑ€ÑÐ¸Ñ',
+            odds_label: 'ÐšÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ñ‹ (Ð¼Ð¸Ð½. 3)',
+            odds_placeholder: 'ÐŸÑ€Ð¸Ð¼ÐµÑ€: 1.50, 1.75, 2.00,',
+            bet_label: 'Ð¡Ñ‚Ð°Ð²ÐºÐ° (â‚¬)',
+            bet_placeholder: 'Ð¡ÑƒÐ¼Ð¼Ð° ÑÑ‚Ð°Ð²ÐºÐ¸',
+            analyze_btn: 'ÐÐ½Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ',
+            options_btn: 'ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸',
+            result_initial: 'Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð²Ð°ÑˆÐ¸ ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ñ‹ Ð´Ð»Ñ Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ñ ÑƒÐ»ÑƒÑ‡ÑˆÐµÐ½Ð½Ð¾Ð³Ð¾ Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð·Ð°',
+            auto_fetch_title: 'ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ðµ ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ',
+            inactive_status: 'ÐÐµÐ°ÐºÑ‚Ð¸Ð²Ð½Ð¾',
+            fetching_status: 'ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ...',
+            coefficients_initial: 'ÐšÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ñ‹ Ð¿Ð¾ÑÐ²ÑÑ‚ÑÑ Ð·Ð´ÐµÑÑŒ',
+            start_btn: 'ÐÐ°Ñ‡Ð°Ñ‚ÑŒ',
+            stop_btn: 'ÐžÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ',
+            stats_title: 'ÐžÐ±Ñ‰Ð°Ñ Ð¡Ñ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°',
+            validated_stat: 'ÐŸÐ¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð¾',
+            failed_stat: 'ÐŸÑ€Ð¾Ð²Ð°Ð»',
+            pending_stat: 'ÐžÐ¶Ð¸Ð´Ð°Ð½Ð¸Ðµ',
+            analysis_intelligence_title: 'Ð˜Ð½Ñ‚ÐµÐ»Ð»ÐµÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹Ð¹ ÐÐ½Ð°Ð»Ð¸Ð·',
+            refresh_btn: 'ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ',
+            analysis_initial: 'ÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð´Ð»Ñ Ð°Ð½Ð°Ð»Ð¸Ð·Ð° Ð´Ð°Ð½Ð½Ñ‹Ñ…',
+            history_title: 'Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ ÐŸÑ€Ð¾Ð³Ð½Ð¾Ð·Ð¾Ð²',
+            hide_btn: 'Ð¡ÐºÑ€Ñ‹Ñ‚ÑŒ',
+            show_btn: 'ÐŸÐ¾ÐºÐ°Ð·Ð°Ñ‚ÑŒ',
+            chart_title: 'Ð­Ð²Ð¾Ð»ÑŽÑ†Ð¸Ñ ÐŸÑ€Ð¾Ð³Ð½Ð¾Ð·Ð¾Ð²',
+            feature1_title: 'ÐÐ²Ñ‚Ð¾Ð¾Ñ‚ÑÐ»ÐµÐ¶Ð¸Ð²Ð°Ð½Ð¸Ðµ',
+            feature1_text: 'Ð¡Ð¸ÑÑ‚ÐµÐ¼Ð° Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÑ‚ ÑƒÑÐ¿ÐµÑ… ÐºÐ°Ð¶Ð´Ð¾Ð³Ð¾ Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð·Ð° Ð² Ñ‚ÐµÑ‡ÐµÐ½Ð¸Ðµ ÑÐ»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ñ… 5 Ñ€Ð°ÑƒÐ½Ð´Ð¾Ð².',
+            feature2_title: 'ÐŸÑ€Ð¾Ð´Ð²Ð¸Ð½ÑƒÑ‚Ñ‹Ð¹ Ð˜Ð˜',
+            feature2_text: 'Ð˜Ð½Ñ‚ÐµÐ»Ð»ÐµÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹Ðµ Ð°Ð»Ð³Ð¾Ñ€Ð¸Ñ‚Ð¼Ñ‹ Ð´Ð»Ñ Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð·Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð¾Ð² Ñ Ð¾Ð¿Ñ‚Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ð¹ Ñ‚Ð¾Ñ‡Ð½Ð¾ÑÑ‚ÑŒÑŽ.',
+            feature3_title: 'ÐÐ½Ð°Ð»Ð¸Ð· Ð² Ð ÐµÐ°Ð»ÑŒÐ½Ð¾Ð¼ Ð’Ñ€ÐµÐ¼ÐµÐ½Ð¸',
+            feature3_text: 'Ð’Ð¸Ð·ÑƒÐ°Ð»Ð¸Ð·Ð¸Ñ€ÑƒÐ¹Ñ‚Ðµ ÑÐ²Ð¾Ð»ÑŽÑ†Ð¸ÑŽ Ð²Ð°ÑˆÐ¸Ñ… Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð·Ð¾Ð² Ñ Ð¿Ð¾Ð¼Ð¾Ñ‰ÑŒÑŽ Ð¸Ð½Ñ‚ÐµÑ€Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ‹Ñ… Ð³Ñ€Ð°Ñ„Ð¸ÐºÐ¾Ð².',
+            // Traductions SweetAlert
+            error_data_insufficient_title: 'ÐÐµÐ´Ð¾ÑÑ‚Ð°Ñ‚Ð¾Ñ‡Ð½Ð¾ Ð´Ð°Ð½Ð½Ñ‹Ñ…',
+            error_data_insufficient_text: 'ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, Ð²Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ðµ Ð¼ÐµÐ½ÐµÐµ 3 Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ñ… ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð¾Ð²',
+            success_prediction_generated_title: 'ÐŸÑ€Ð¾Ð³Ð½Ð¾Ð· Ð¡Ð³ÐµÐ½ÐµÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½!',
+            success_prediction_validated_title: 'ÐŸÑ€Ð¾Ð³Ð½Ð¾Ð· ÐŸÐ¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½!',
+            success_prediction_validated_text: 'ÐŸÑ€Ð¾Ð³Ð½Ð¾Ð· $1 Ð±Ñ‹Ð» Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½ Ð² Ð Ð°ÑƒÐ½Ð´Ðµ $2',
+            error_prediction_failed_title: 'ÐŸÑ€Ð¾Ð³Ð½Ð¾Ð· ÐŸÑ€Ð¾Ð²Ð°Ð»ÐµÐ½',
+            error_prediction_failed_text: 'ÐŸÑ€Ð¾Ð³Ð½Ð¾Ð· $1 Ð½Ðµ Ð±Ñ‹Ð» Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½ Ð² Ñ‚ÐµÑ‡ÐµÐ½Ð¸Ðµ 5 Ñ€Ð°ÑƒÐ½Ð´Ð¾Ð²',
+            success_fetch_start_title: 'ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð½Ð°Ñ‡Ð°Ñ‚Ð¾',
+            success_fetch_start_text: 'ÐšÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ñ‹ Ð±ÑƒÐ´ÑƒÑ‚ Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸ Ð¾Ð±Ð½Ð¾Ð²Ð»ÑÑ‚ÑŒÑÑ ÐºÐ°Ð¶Ð´Ñ‹Ðµ 5 ÑÐµÐºÑƒÐ½Ð´',
+            info_fetch_stop_title: 'ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¾ÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¾',
+            warning_duplicate: 'ÐžÐ±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½ Ð¸Ð´ÐµÐ½Ñ‚Ð¸Ñ‡Ð½Ñ‹Ð¹ ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚ Ð² ÑÐ»Ð¸ÑˆÐºÐ¾Ð¼ ÐºÐ¾Ñ€Ð¾Ñ‚ÐºÐ¾Ð¼ Ð¸Ð½Ñ‚ÐµÑ€Ð²Ð°Ð»Ðµ (Ð¸Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÑ‚ÑÑ)',
+            // Nouveaux Ã©lÃ©ments de prÃ©diction
+            predicted_odds: 'Ð’ÐµÑ€Ð¾ÑÑ‚Ð½Ñ‹Ð¹ ÐšÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚',
+            success_probability: 'Ð’ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚ÑŒ Ð£ÑÐ¿ÐµÑ…Ð°',
+            potential_win: 'ÐŸÐ¾Ñ‚ÐµÐ½Ñ†Ð¸Ð°Ð»ÑŒÐ½Ñ‹Ð¹ Ð’Ñ‹Ð¸Ð³Ñ€Ñ‹Ñˆ',
+            predicted_rounds_title: 'ÐŸÑ€Ð¾Ð³Ð½Ð¾Ð·Ð¸Ñ€ÑƒÐµÐ¼Ñ‹Ðµ Ð Ð°ÑƒÐ½Ð´Ñ‹ ÐŸÐ¾ÑÐ²Ð»ÐµÐ½Ð¸Ñ',
+            confidence_label: 'Ð£Ñ€Ð¾Ð²ÐµÐ½ÑŒ Ð´Ð¾Ð²ÐµÑ€Ð¸Ñ',
+            trend_label: 'Ð¢Ñ€ÐµÐ½Ð´',
+            volatility_label: 'Ð’Ð¾Ð»Ð°Ñ‚Ð¸Ð»ÑŒÐ½Ð¾ÑÑ‚ÑŒ',
+            trend_up: 'Ð Ð¾ÑÑ‚',
+            trend_down: 'ÐŸÐ°Ð´ÐµÐ½Ð¸Ðµ',
+            trend_stable: 'Ð¡Ñ‚Ð°Ð±Ð¸Ð»ÑŒÐ½Ð¾',
+            pattern_bullish: 'Ð‘Ñ‹Ñ‡Ð¸Ð¹ Ð¢Ñ€ÐµÐ½Ð´',
+            pattern_bearish: 'ÐœÐµÐ´Ð²ÐµÐ¶Ð¸Ð¹ Ð¢Ñ€ÐµÐ½Ð´',
+            pattern_neutral: 'ÐÐµÑ‚ Ð§ÐµÑ‚ÐºÐ¾Ð³Ð¾ Ð¢Ñ€ÐµÐ½Ð´Ð°',
+            verification_pending_text: 'ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð² Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐµ... Ð Ð°ÑƒÐ½Ð´ $1/5',
+            verification_success_text: 'âœ… ÐŸÐ¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð¾ Ð² Ð Ð°ÑƒÐ½Ð´Ðµ $1',
+            verification_failed_text: 'âŒ ÐŸÑ€Ð¾Ð²Ð°Ð» Ð¿Ð¾ÑÐ»Ðµ 5 Ñ€Ð°ÑƒÐ½Ð´Ð¾Ð²',
+            high_confidence_message: 'ÐžÑ‡ÐµÐ½ÑŒ Ð²Ñ‹ÑÐ¾ÐºÐ¾Ðµ Ð´Ð¾Ð²ÐµÑ€Ð¸Ðµ - Ð­Ñ‚Ð¾Ñ‚ Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð· Ð¸Ð¼ÐµÐµÑ‚ Ð¾Ñ‡ÐµÐ½ÑŒ ÑÐ¸Ð»ÑŒÐ½Ñ‹Ð¹ ÑˆÐ°Ð½Ñ Ð±Ñ‹ÑÑ‚Ñ€Ð¾ Ð¿Ð¾ÑÐ²Ð¸Ñ‚ÑŒÑÑ.',
+            medium_high_confidence_message: 'Ð’Ñ‹ÑÐ¾ÐºÐ¾Ðµ Ð´Ð¾Ð²ÐµÑ€Ð¸Ðµ - Ð­Ñ‚Ð¾Ñ‚ Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð· Ð¾Ñ‡ÐµÐ½ÑŒ Ð²ÐµÑ€Ð¾ÑÑ‚ÐµÐ½ Ð² ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ñ‹Ñ… Ñ€Ð°ÑƒÐ½Ð´Ð°Ñ….',
+            medium_confidence_message: 'Ð¡Ñ€ÐµÐ´Ð½ÐµÐµ Ð´Ð¾Ð²ÐµÑ€Ð¸Ðµ - Ð­Ñ‚Ð¾Ñ‚ Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð· Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð¿Ð¾ÑÐ²Ð¸Ñ‚ÑŒÑÑ Ð² ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ñ‹Ñ… Ñ€Ð°ÑƒÐ½Ð´Ð°Ñ….',
+            low_confidence_message: 'âš ï¸ ÐÐ¸Ð·ÐºÐ¾Ðµ Ð´Ð¾Ð²ÐµÑ€Ð¸Ðµ - Ð­Ñ‚Ð¾Ñ‚ Ñ‚Ð¸Ð¿ ÑÑ‚Ð°Ð²ÐºÐ¸ Ð½ÐµÑÐµÑ‚ Ð±Ð¾Ð»ÐµÐµ Ð²Ñ‹ÑÐ¾ÐºÐ¸Ð¹ Ñ€Ð¸ÑÐº. Ð Ð°ÑÑÐ¼Ð¾Ñ‚Ñ€Ð¸Ñ‚Ðµ ÑƒÐ¼ÐµÐ½ÑŒÑˆÐµÐ½Ð½ÑƒÑŽ ÑÑƒÐ¼Ð¼Ñƒ ÑÑ‚Ð°Ð²ÐºÐ¸.',
+            moderate_confidence_message: 'Ð£Ð¼ÐµÑ€ÐµÐ½Ð½Ð¾Ðµ Ð´Ð¾Ð²ÐµÑ€Ð¸Ðµ - Ð’Ð½Ð¸Ð¼Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ ÑÐ»ÐµÐ´Ð¸Ñ‚Ðµ Ð·Ð° ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ñ€Ð°ÑƒÐ½Ð´Ð°Ð¼Ð¸.',
+            // Analyse Intelligence
+            perf_title: 'Ð¡Ñ€ÐµÐ´Ð½ÑÑ Ð¿Ñ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÑŒ',
+            perf_success_rate: 'Ð£Ñ€Ð¾Ð²ÐµÐ½ÑŒ ÑƒÑÐ¿ÐµÑ…Ð°',
+            perf_avg_confidence: 'Ð¡Ñ€ÐµÐ´Ð½ÑÑ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ÑÑ‚ÑŒ',
+            best_odds_title: 'Ð›ÑƒÑ‡ÑˆÐ¸Ðµ ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ñ‹',
+            best_odds_optimal_range: 'ÐžÐ¿Ñ‚Ð¸Ð¼Ð°Ð»ÑŒÐ½Ñ‹Ð¹ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½',
+            best_odds_distribution: 'Ð Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ðµ ÑƒÑÐ¿ÐµÑ…Ð¾Ð²',
+            historical_analysis_title: 'Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ Ð°Ð½Ð°Ð»Ð¸Ð·',
+            historical_summary: '$1 ÑƒÑÐ¿ÐµÑˆÐ½Ñ‹Ñ… Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð·Ð¾Ð² Ð¸Ð· $2 Ð²ÑÐµÐ³Ð¾',
+            // Options
+            options_analysis_mode: "Ð ÐµÐ¶Ð¸Ð¼ Ð°Ð½Ð°Ð»Ð¸Ð·Ð°",
+            options_mode_standard: "Ð¡Ñ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½Ñ‹Ð¹ (ÐŸÑ€Ð¾ÑÑ‚Ð¾Ðµ ÑÑ€ÐµÐ´Ð½ÐµÐµ)",
+            options_mode_advanced: "ÐŸÑ€Ð¾Ð´Ð²Ð¸Ð½ÑƒÑ‚Ñ‹Ð¹ (ÐÐ´Ð°Ð¿Ñ‚Ð¸Ð²Ð½Ð¾Ðµ Ð²Ð·Ð²ÐµÑˆÐ¸Ð²Ð°Ð½Ð¸Ðµ)",
+            options_mode_pro: "ÐŸÑ€Ð¾Ñ„ÐµÑÑÐ¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ð¹ (ÐŸÐ¾Ð»Ð½Ñ‹Ð¹ Ð°Ð½Ð°Ð»Ð¸Ð·)",
+            options_analysis_options: "ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð°Ð½Ð°Ð»Ð¸Ð·Ð°",
+            options_exclude_extremes: "Ð˜ÑÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ ÑÐºÑÑ‚Ñ€ÐµÐ¼Ð°Ð»ÑŒÐ½Ñ‹Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ",
+            options_trend_analysis: "Ð¢ÐµÐ½Ð´ÐµÐ½Ñ†Ð¸Ð¾Ð·Ð½Ñ‹Ð¹ Ð°Ð½Ð°Ð»Ð¸Ð·",
+            options_volatility_threshold: "ÐŸÐ¾Ñ€Ð¾Ð³ Ð²Ð¾Ð»Ð°Ñ‚Ð¸Ð»ÑŒÐ½Ð¾ÑÑ‚Ð¸",
+            options_save: 'Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ',
+            options_cancel: 'ÐžÑ‚Ð¼ÐµÐ½Ð°',
+            options_saved: 'ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ñ‹',
+            // Dynamique
+            coeffs_remaining: '$1 ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚(Ð°/Ð¾Ð²) Ð¾ÑÑ‚Ð°Ð²ÑˆÐ¸Ð¹ÑÑ(-Ð¸Ñ…ÑÑ) Ð´Ð¾ Ð¿Ñ€Ð¾Ð³Ð½Ð¾Ð·Ð°'
+        },
+        hi: {
+            title: 'ðŸš€ à¤ªà¥à¤°à¥‹ à¤ªà¥à¤°à¥‡à¤¡à¤¿à¤•à¥à¤¶à¤¨ à¤°à¥‹à¤¬à¥‹à¤Ÿ - à¤¬à¥‡à¤¹à¤¤à¤° à¤¸à¤‚à¤¸à¥à¤•à¤°à¤£',
+            modal_title: 'à¤…à¤ªà¤¨à¥€ à¤­à¤¾à¤·à¤¾ à¤šà¥à¤¨à¥‡à¤‚',
+            modal_close: 'à¤¬à¤‚à¤¦ à¤•à¤°à¥‡à¤‚',
+            app_title: 'ðŸ¤– à¤ªà¥à¤°à¥‹ à¤ªà¥à¤°à¥‡à¤¡à¤¿à¤•à¥à¤Ÿà¤°',
+            app_subtitle: 'à¤‰à¤¨à¥à¤¨à¤¤ à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£ à¤•à¥‡ à¤¸à¤¾à¤¥ à¤¸à¥à¤µà¤šà¤¾à¤²à¤¿à¤¤ à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤Ÿà¥à¤°à¥ˆà¤•à¤¿à¤‚à¤—',
+            analysis_title: 'à¤‘à¤¡à¥à¤¸ à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£ - à¤¬à¥‡à¤¹à¤¤à¤° à¤¸à¤‚à¤¸à¥à¤•à¤°à¤£',
+            odds_label: 'à¤‘à¤¡à¥à¤¸ (à¤¨à¥à¤¯à¥‚à¤¨à¤¤à¤® 3)',
+            odds_placeholder: 'à¤‰à¤¦à¤¾: 1.50, 1.75, 2.00,',
+            bet_label: 'à¤¦à¤¾à¤‚à¤µ à¤°à¤¾à¤¶à¤¿ (â‚¬)',
+            bet_placeholder: 'à¤¦à¤¾à¤‚à¤µ à¤²à¤—à¤¾à¤¨à¥‡ à¤•à¥€ à¤°à¤¾à¤¶à¤¿',
+            analyze_btn: 'à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£ à¤•à¤°à¥‡à¤‚',
+            options_btn: 'à¤µà¤¿à¤•à¤²à¥à¤ª',
+            result_initial: 'à¤¬à¥‡à¤¹à¤¤à¤° à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤ªà¥à¤°à¤¾à¤ªà¥à¤¤ à¤•à¤°à¤¨à¥‡ à¤•à¥‡ à¤²à¤¿à¤ à¤…à¤ªà¤¨à¥€ à¤‘à¤¡à¥à¤¸ à¤¦à¤°à¥à¤œ à¤•à¤°à¥‡à¤‚',
+            auto_fetch_title: 'à¤¸à¥à¤µà¤šà¤¾à¤²à¤¿à¤¤ à¤«à¥‡à¤šà¤¿à¤‚à¤—',
+            inactive_status: 'à¤¨à¤¿à¤·à¥à¤•à¥à¤°à¤¿à¤¯',
+            fetching_status: 'à¤«à¥‡à¤šà¤¿à¤‚à¤— à¤ªà¥à¤°à¤—à¤¤à¤¿ à¤ªà¤° à¤¹à¥ˆ...',
+            coefficients_initial: 'à¤—à¥à¤£à¤¾à¤‚à¤• à¤¯à¤¹à¤¾à¤‚ à¤¦à¤¿à¤–à¤¾à¤ˆ à¤¦à¥‡à¤‚à¤—à¥‡',
+            start_btn: 'à¤¶à¥à¤°à¥‚ à¤•à¤°à¥‡à¤‚',
+            stop_btn: 'à¤°à¥‹à¤•à¥‡à¤‚',
+            stats_title: 'à¤µà¥ˆà¤¶à¥à¤µà¤¿à¤• à¤†à¤à¤•à¤¡à¤¼à¥‡',
+            validated_stat: 'à¤¸à¤¤à¥à¤¯à¤¾à¤ªà¤¿à¤¤',
+            failed_stat: 'à¤µà¤¿à¤«à¤²',
+            pending_stat: 'à¤²à¤‚à¤¬à¤¿à¤¤',
+            analysis_intelligence_title: 'à¤–à¥à¤«à¤¿à¤¯à¤¾ à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£',
+            refresh_btn: 'à¤¤à¤¾à¤œà¤¼à¤¾ à¤•à¤°à¥‡à¤‚',
+            analysis_initial: 'à¤¡à¥‡à¤Ÿà¤¾ à¤•à¤¾ à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£ à¤•à¤°à¤¨à¥‡ à¤•à¥‡ à¤²à¤¿à¤ à¤¤à¤¾à¤œà¤¼à¤¾ à¤•à¤°à¥‡à¤‚ à¤ªà¤° à¤•à¥à¤²à¤¿à¤• à¤•à¤°à¥‡à¤‚',
+            history_title: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤‡à¤¤à¤¿à¤¹à¤¾à¤¸',
+            hide_btn: 'à¤›à¤¿à¤ªà¤¾à¤à¤',
+            show_btn: 'à¤¦à¤¿à¤–à¤¾à¤à¤',
+            chart_title: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤µà¤¿à¤•à¤¾à¤¸',
+            feature1_title: 'à¤¸à¥à¤µà¤šà¤¾à¤²à¤¿à¤¤ à¤Ÿà¥à¤°à¥ˆà¤•à¤¿à¤‚à¤—',
+            feature1_text: 'à¤¸à¤¿à¤¸à¥à¤Ÿà¤® à¤…à¤—à¤²à¥‡ 5 à¤°à¤¾à¤‰à¤‚à¤¡ à¤®à¥‡à¤‚ à¤ªà¥à¤°à¤¤à¥à¤¯à¥‡à¤• à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤•à¥€ à¤¸à¤«à¤²à¤¤à¤¾ à¤•à¥‹ à¤¸à¥à¤µà¤šà¤¾à¤²à¤¿à¤¤ à¤°à¥‚à¤ª à¤¸à¥‡ à¤œà¤¾à¤‚à¤šà¤¤à¤¾ à¤¹à¥ˆà¥¤',
+            feature2_title: 'à¤‰à¤¨à¥à¤¨à¤¤ à¤à¤†à¤ˆ',
+            feature2_text: 'à¤‡à¤·à¥à¤Ÿà¤¤à¤® à¤¸à¤Ÿà¥€à¤•à¤¤à¤¾ à¤•à¥‡ à¤¸à¤¾à¤¥ à¤‘à¤¡à¥à¤¸ à¤•à¤¾ à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤²à¤—à¤¾à¤¨à¥‡ à¤•à¥‡ à¤²à¤¿à¤ à¤¬à¥à¤¦à¥à¤§à¤¿à¤®à¤¾à¤¨ à¤à¤²à¥à¤—à¥‹à¤°à¤¿à¤¦à¤®à¥¤',
+            feature3_title: 'à¤µà¤¾à¤¸à¥à¤¤à¤µà¤¿à¤• à¤¸à¤®à¤¯ à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£',
+            feature3_text: 'à¤‡à¤‚à¤Ÿà¤°à¥ˆà¤•à¥à¤Ÿà¤¿à¤µ à¤šà¤¾à¤°à¥à¤Ÿ à¤•à¥‡ à¤¸à¤¾à¤¥ à¤…à¤ªà¤¨à¥‡ à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨à¥‹à¤‚ à¤•à¥‡ à¤µà¤¿à¤•à¤¾à¤¸ à¤•à¥€ à¤•à¤²à¥à¤ªà¤¨à¤¾ à¤•à¤°à¥‡à¤‚à¥¤',
+            // Traductions SweetAlert
+            error_data_insufficient_title: 'à¤…à¤ªà¤°à¥à¤¯à¤¾à¤ªà¥à¤¤ à¤¡à¥‡à¤Ÿà¤¾',
+            error_data_insufficient_text: 'à¤•à¥ƒà¤ªà¤¯à¤¾ à¤•à¤® à¤¸à¥‡ à¤•à¤® 3 à¤µà¥ˆà¤§ à¤‘à¤¡à¥à¤¸ à¤¦à¤°à¥à¤œ à¤•à¤°à¥‡à¤‚',
+            success_prediction_generated_title: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤‰à¤¤à¥à¤ªà¤¨à¥à¤¨ à¤¹à¥à¤†!',
+            success_prediction_validated_title: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤¸à¤¤à¥à¤¯à¤¾à¤ªà¤¿à¤¤!',
+            success_prediction_validated_text: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ $1 à¤•à¥‹ à¤°à¤¾à¤‰à¤‚à¤¡ $2 à¤®à¥‡à¤‚ à¤¸à¤¤à¥à¤¯à¤¾à¤ªà¤¿à¤¤ à¤•à¤¿à¤¯à¤¾ à¤—à¤¯à¤¾',
+            error_prediction_failed_title: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤µà¤¿à¤«à¤²',
+            error_prediction_failed_text: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ $1 à¤•à¥‹ 5 à¤°à¤¾à¤‰à¤‚à¤¡ à¤•à¥‡ à¤­à¥€à¤¤à¤° à¤¸à¤¤à¥à¤¯à¤¾à¤ªà¤¿à¤¤ à¤¨à¤¹à¥€à¤‚ à¤•à¤¿à¤¯à¤¾ à¤—à¤¯à¤¾',
+            success_fetch_start_title: 'à¤«à¥‡à¤šà¤¿à¤‚à¤— à¤¶à¥à¤°à¥‚ à¤¹à¥à¤ˆ',
+            success_fetch_start_text: 'à¤—à¥à¤£à¤¾à¤‚à¤• à¤¹à¤° 5 à¤¸à¥‡à¤•à¤‚à¤¡ à¤®à¥‡à¤‚ à¤¸à¥à¤µà¤šà¤¾à¤²à¤¿à¤¤ à¤°à¥‚à¤ª à¤¸à¥‡ à¤«à¥‡à¤š à¤•à¤¿à¤ à¤œà¤¾à¤à¤‚à¤—à¥‡',
+            info_fetch_stop_title: 'à¤«à¥‡à¤šà¤¿à¤‚à¤— à¤°à¥‹à¤•à¥€ à¤—à¤ˆ',
+            warning_duplicate: 'à¤¬à¤¹à¥à¤¤ à¤•à¤® à¤…à¤‚à¤¤à¤°à¤¾à¤² à¤®à¥‡à¤‚ à¤¸à¤®à¤¾à¤¨ à¤—à¥à¤£à¤¾à¤‚à¤• à¤•à¤¾ à¤ªà¤¤à¤¾ à¤šà¤²à¤¾ (à¤…à¤¨à¤¦à¥‡à¤–à¤¾)',
+            // Nouveaux Ã©lÃ©ments de prÃ©diction
+            predicted_odds: 'à¤¸à¤‚à¤­à¤¾à¤µà¤¿à¤¤ à¤‘à¤¡à¥à¤¸',
+            success_probability: 'à¤¸à¤«à¤²à¤¤à¤¾ à¤•à¥€ à¤¸à¤‚à¤­à¤¾à¤µà¤¨à¤¾',
+            potential_win: 'à¤¸à¤‚à¤­à¤¾à¤µà¤¿à¤¤ à¤œà¥€à¤¤',
+            predicted_rounds_title: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨à¤¿à¤¤ à¤‰à¤ªà¤¸à¥à¤¥à¤¿à¤¤à¤¿ à¤°à¤¾à¤‰à¤‚à¤¡',
+            confidence_label: 'à¤µà¤¿à¤¶à¥à¤µà¤¾à¤¸ à¤¸à¥à¤¤à¤°',
+            trend_label: 'à¤ªà¥à¤°à¤µà¥ƒà¤¤à¥à¤¤à¤¿',
+            volatility_label: 'à¤…à¤¸à¥à¤¥à¤¿à¤°à¤¤à¤¾',
+            trend_up: 'à¤Šà¤ªà¤°',
+            trend_down: 'à¤¨à¥€à¤šà¥‡',
+            trend_stable: 'à¤¸à¥à¤¥à¤¿à¤°',
+            pattern_bullish: 'à¤¤à¥‡à¤œà¥€ à¤•à¥€ à¤ªà¥à¤°à¤µà¥ƒà¤¤à¥à¤¤à¤¿',
+            pattern_bearish: 'à¤®à¤‚à¤¦à¥€ à¤•à¥€ à¤ªà¥à¤°à¤µà¥ƒà¤¤à¥à¤¤à¤¿',
+            pattern_neutral: 'à¤•à¥‹à¤ˆ à¤¸à¥à¤ªà¤·à¥à¤Ÿ à¤ªà¥à¤°à¤µà¥ƒà¤¤à¥à¤¤à¤¿ à¤¨à¤¹à¥€à¤‚',
+            verification_pending_text: 'à¤¸à¤¤à¥à¤¯à¤¾à¤ªà¤¨ à¤ªà¥à¤°à¤—à¤¤à¤¿ à¤ªà¤° à¤¹à¥ˆ... à¤°à¤¾à¤‰à¤‚à¤¡ $1/5',
+            verification_success_text: 'âœ… à¤°à¤¾à¤‰à¤‚à¤¡ $1 à¤®à¥‡à¤‚ à¤¸à¤¤à¥à¤¯à¤¾à¤ªà¤¿à¤¤',
+            verification_failed_text: 'âŒ 5 à¤°à¤¾à¤‰à¤‚à¤¡ à¤•à¥‡ à¤¬à¤¾à¤¦ à¤µà¤¿à¤«à¤²',
+            high_confidence_message: 'à¤¬à¤¹à¥à¤¤ à¤‰à¤šà¥à¤š à¤†à¤¤à¥à¤®à¤µà¤¿à¤¶à¥à¤µà¤¾à¤¸ - à¤‡à¤¸ à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤®à¥‡à¤‚ à¤¤à¥‡à¤œà¤¼à¥€ à¤¸à¥‡ à¤ªà¥à¤°à¤•à¤Ÿ à¤¹à¥‹à¤¨à¥‡ à¤•à¥€ à¤¬à¤¹à¥à¤¤ à¤®à¤œà¤¬à¥‚à¤¤ à¤¸à¤‚à¤­à¤¾à¤µà¤¨à¤¾ à¤¹à¥ˆà¥¤',
+            medium_high_confidence_message: 'à¤‰à¤šà¥à¤š à¤†à¤¤à¥à¤®à¤µà¤¿à¤¶à¥à¤µà¤¾à¤¸ - à¤¯à¤¹ à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤¬à¤¤à¤¾à¤ à¤—à¤ à¤°à¤¾à¤‰à¤‚à¤¡ à¤®à¥‡à¤‚ à¤¬à¤¹à¥à¤¤ à¤¸à¤‚à¤­à¤¾à¤µà¤¿à¤¤ à¤¹à¥ˆà¥¤',
+            medium_confidence_message: 'à¤”à¤¸à¤¤ à¤†à¤¤à¥à¤®à¤µà¤¿à¤¶à¥à¤µà¤¾à¤¸ - à¤¯à¤¹ à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤¬à¤¤à¤¾à¤ à¤—à¤ à¤°à¤¾à¤‰à¤‚à¤¡ à¤®à¥‡à¤‚ à¤¦à¤¿à¤–à¤¾à¤ˆ à¤¦à¥‡à¤¨à¤¾ à¤šà¤¾à¤¹à¤¿à¤à¥¤',
+            low_confidence_message: 'âš ï¸ à¤•à¤® à¤†à¤¤à¥à¤®à¤µà¤¿à¤¶à¥à¤µà¤¾à¤¸ - à¤‡à¤¸ à¤ªà¥à¤°à¤•à¤¾à¤° à¤•à¥‡ à¤¦à¤¾à¤‚à¤µ à¤®à¥‡à¤‚ à¤…à¤§à¤¿à¤• à¤œà¥‹à¤–à¤¿à¤® à¤¹à¥‹à¤¤à¤¾ à¤¹à¥ˆà¥¤ à¤•à¤® à¤¦à¤¾à¤‚à¤µ à¤°à¤¾à¤¶à¤¿ à¤ªà¤° à¤µà¤¿à¤šà¤¾à¤° à¤•à¤°à¥‡à¤‚à¥¤',
+            moderate_confidence_message: 'à¤®à¤§à¥à¤¯à¤® à¤†à¤¤à¥à¤®à¤µà¤¿à¤¶à¥à¤µà¤¾à¤¸ - à¤¬à¤¤à¤¾à¤ à¤—à¤ à¤°à¤¾à¤‰à¤‚à¤¡ à¤•à¥€ à¤¸à¤¾à¤µà¤§à¤¾à¤¨à¥€à¤ªà¥‚à¤°à¥à¤µà¤• à¤¨à¤¿à¤—à¤°à¤¾à¤¨à¥€ à¤•à¤°à¥‡à¤‚à¥¤',
+            // Analyse Intelligence
+            perf_title: 'à¤”à¤¸à¤¤ à¤ªà¥à¤°à¤¦à¤°à¥à¤¶à¤¨',
+            perf_success_rate: 'à¤¸à¤«à¤²à¤¤à¤¾ à¤¦à¤°',
+            perf_avg_confidence: 'à¤”à¤¸à¤¤ à¤¸à¤«à¤²à¤¤à¤¾ à¤µà¤¿à¤¶à¥à¤µà¤¾à¤¸',
+            best_odds_title: 'à¤¸à¤°à¥à¤µà¥‹à¤¤à¥à¤¤à¤® à¤‘à¤¡à¥à¤¸',
+            best_odds_optimal_range: 'à¤‡à¤·à¥à¤Ÿà¤¤à¤® à¤°à¥‡à¤‚à¤œ',
+            best_odds_distribution: 'à¤¸à¤«à¤²à¤¤à¤¾ à¤µà¤¿à¤¤à¤°à¤£',
+            historical_analysis_title: 'à¤à¤¤à¤¿à¤¹à¤¾à¤¸à¤¿à¤• à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£',
+            historical_summary: '$2 à¤®à¥‡à¤‚ à¤¸à¥‡ $1 à¤¸à¤«à¤² à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨',
+            // Options
+            options_analysis_mode: "à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£ à¤®à¥‹à¤¡",
+            options_mode_standard: "à¤®à¤¾à¤¨à¤• (à¤¸à¤°à¤² à¤”à¤¸à¤¤)",
+            options_mode_advanced: "à¤‰à¤¨à¥à¤¨à¤¤ (à¤…à¤¨à¥à¤•à¥‚à¤²à¥€ à¤­à¤¾à¤°à¤£)",
+            options_mode_pro: "à¤µà¥à¤¯à¤¾à¤µà¤¸à¤¾à¤¯à¤¿à¤• (à¤ªà¥‚à¤°à¥à¤£ à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£)",
+            options_analysis_options: "à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£ à¤µà¤¿à¤•à¤²à¥à¤ª",
+            options_exclude_extremes: "à¤šà¤°à¤® à¤®à¤¾à¤¨à¥‹à¤‚ à¤•à¥‹ à¤¬à¤¾à¤¹à¤° à¤•à¤°à¥‡à¤‚",
+            options_trend_analysis: "à¤ªà¥à¤°à¤µà¥ƒà¤¤à¥à¤¤à¤¿ à¤µà¤¿à¤¶à¥à¤²à¥‡à¤·à¤£",
+            options_volatility_threshold: "à¤…à¤¸à¥à¤¥à¤¿à¤°à¤¤à¤¾ à¤¸à¥€à¤®à¤¾",
+            options_save: 'à¤¸à¤¹à¥‡à¤œà¥‡à¤‚',
+            options_cancel: 'à¤°à¤¦à¥à¤¦ à¤•à¤°à¥‡à¤‚',
+            options_saved: 'à¤¸à¥‡à¤Ÿà¤¿à¤‚à¤—à¥à¤¸ à¤¸à¤¹à¥‡à¤œà¥€ à¤—à¤ˆà¤‚',
+            // Dynamique
+            coeffs_remaining: 'à¤ªà¥‚à¤°à¥à¤µà¤¾à¤¨à¥à¤®à¤¾à¤¨ à¤¸à¥‡ à¤ªà¤¹à¤²à¥‡ à¤¶à¥‡à¤· $1 à¤—à¥à¤£à¤¾à¤‚à¤•'
+        }
+    };
+
+    /**
+     * Applique les traductions Ã  l'interface en utilisant les attributs data-translate.
+     */
+    function applyTranslation(lang) {
+        const t = translations[lang];
+        if (!t) return;
+        
+        // Mettre Ã  jour l'attribut lang de la balise HTML
+        document.documentElement.lang = lang;
+
+        // Traduire le titre du document
+        document.title = t.title;
+
+        // Traduire les Ã©lÃ©ments de texte
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (t[key]) {
+                element.textContent = t[key];
+            }
+        });
+
+        // Traduire les placeholders
+        document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+            const key = element.getAttribute('data-translate-placeholder');
+            if (t[key]) {
+                element.placeholder = t[key];
+            }
+        });
+        
+        // Mettre Ã  jour l'affichage de la langue actuelle
+        document.getElementById('currentLangDisplay').textContent = lang.toUpperCase();
+
+        // Mettre Ã  jour l'Ã©tat de rÃ©cupÃ©ration automatique
+        if (document.getElementById('autoFetchStatus')) {
+            const statusElement = document.getElementById('autoFetchStatus');
+            if (isAutoFetchActive) {
+                statusElement.innerHTML = `
+                    <span class="bg-green-500 rounded-full w-3 h-3 inline-block mr-2"></span>
+                    <span>${t.fetching_status}</span>
+                    <span class="fetching-spinner ml-2 w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full inline-block animate-spin"></span>
+                `;
+            } else {
+                statusElement.innerHTML = `
+                    <span class="bg-red-500 rounded-full w-3 h-3 inline-block mr-2"></span>
+                    <span>${t.inactive_status}</span>
+                `;
+            }
+        }
+
+        // Mettre Ã  jour le contenu dynamique (historique, rÃ©sultats, analyse)
+        // Note: L'appel Ã  updatePredictionHistory, updatePredictionDisplay et analyzeHistoricalData
+        // doit reconstruire l'HTML avec la bonne langue.
+        updatePredictionHistory();
+
+        // Afficher Ã  nouveau le dernier rÃ©sultat si disponible
+        if (predictionHistory.length > 0) {
+            updatePredictionDisplay(predictionHistory[0]);
+        } else {
+            document.getElementById('result').innerHTML = `<div class="text-center text-gray-500">${t.result_initial}</div>`;
+        }
+        
+        updateCoefficientsDisplay();
+        analyzeHistoricalData();
+
+        // Mettre Ã  jour le bouton d'historique
+        if (document.getElementById('toggleHistory')) {
+            document.getElementById('toggleHistory').textContent = isHistoryVisible ? t.hide_btn : t.show_btn;
+        }
+
+        // Mettre Ã  jour l'indicateur dans le modal
+        ['fr', 'en', 'ru', 'hi'].forEach(l => {
+            const check = document.getElementById(`check-${l}`);
+            if (check) {
+                check.classList.toggle('hidden', l !== currentLang);
+            }
+        });
+    }
+
+    /**
+     * Affiche le modal de sÃ©lection de langue.
+     */
+    function showLanguageModal() {
+        document.getElementById('languageModal').style.display = 'flex';
+        // Assure que l'indicateur de coche est correct lors de l'ouverture
+        ['fr', 'en', 'ru', 'hi'].forEach(l => {
+            const check = document.getElementById(`check-${l}`);
+            if (check) {
+                check.classList.toggle('hidden', l !== currentLang);
+            }
+        });
+    }
+
+    /**
+     * Change la langue de l'application.
+     * @param {string} lang - Code de la langue ('fr', 'en', 'ru', 'hi').
+     */
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('userLanguage', lang);
+        applyTranslation(lang);
+        document.getElementById('languageModal').style.display = 'none';
+        
+        // Petite temporisation pour assurer que la traduction est appliquÃ©e avant la notification
+        setTimeout(() => {
+            Swal.fire({
+                icon: 'success',
+                title: translations[lang].modal_title.includes('Choisir') ? 'Langue changÃ©e' : 'Language changed', 
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }, 50); 
+    }
+    // --- FIN PARTIE TRADUCTION ---
+    
+    // Variables globales
+    let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
+    let statsChart = null;
+    let isHistoryVisible = true;
+    let autoCoefficients = [];
+    let autoFetchInterval = null;
+    let pendingVerification = [];
+    let isAutoFetchActive = false;
+    let trendAnalysis = [];
+    
+    // Variables pour le contrÃ´le des doublons
+    let lastCoefficient = null;
+    let lastFetchTime = null;
+    let duplicateWarningTimeout = null;
+    
+    // Initialisation au chargement
+    document.addEventListener('DOMContentLoaded', () => {
+        // Si aucune langue n'est choisie, afficher le modal immÃ©diatement
+        if (currentLang === null) {
+            currentLang = defaultLang; // DÃ©finir une langue par dÃ©faut pour la premiÃ¨re traduction
+            showLanguageModal();
+        }
+
+        // Appliquer la traduction dÃ¨s le chargement, aprÃ¨s avoir potentiellement ouvert le modal
+        applyTranslation(currentLang);
+
+        updatePredictionHistory();
+        updateStatistics();
+        updateStatsChart();
+        analyzeHistoricalData();
+    });
+
+    // Nouvelle fonction pour rÃ©cupÃ©rer les coefficients
+    async function fetchStopCoefficient() {
+        const apiURL = "https://crash-gateway-grm-cr.100hp.app/state";
+        const headers = {
+            'customer-id': '077dee8d-c923-4c02-9bee-757573662e69',
+            'session-id': '0cb9bd71-11a4-4dc1-b649-605f04ad911e',
+            'accept': 'application/json'
+        };
+
+        try {
+            const response = await fetch(apiURL, { headers });
+            if (!response.ok) throw new Error("Erreur API");
+
+            const data = await response.json();
+            return data.stopCoefficients?.[0] ?? null;
+        } catch (error) {
+            console.error("Erreur :", error);
+            return null;
+        }
+    }
+
+    // Fonction pour dÃ©marrer la rÃ©cupÃ©ration automatique
+    function startAutoFetch() {
+        if (autoFetchInterval) return;
+        
+        isAutoFetchActive = true;
+        const statusElement = document.getElementById('autoFetchStatus');
+        const t = translations[currentLang];
+
+        statusElement.innerHTML = `
+            <span class="bg-green-500 rounded-full w-3 h-3 inline-block mr-2"></span>
+            <span>${t.fetching_status}</span>
+            <span class="fetching-spinner ml-2 w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full inline-block animate-spin"></span>
+        `;
+        
+        // DÃ©marrer immÃ©diatement une premiÃ¨re rÃ©cupÃ©ration
+        fetchLatestCoefficient();
+        
+        // Puis configurer l'intervalle
+        autoFetchInterval = setInterval(fetchLatestCoefficient, 5000);
+        
+        Swal.fire({
+            icon: 'success',
+            title: t.success_fetch_start_title,
+            text: t.success_fetch_start_text,
+            timer: 2000
+        });
+    }
+    
+    // Fonction pour arrÃªter la rÃ©cupÃ©ration automatique
+    function stopAutoFetch() {
+        if (autoFetchInterval) {
+            clearInterval(autoFetchInterval);
+            autoFetchInterval = null;
+            isAutoFetchActive = false;
+            
+            // RÃ©initialiser les variables de contrÃ´le des doublons
+            lastCoefficient = null;
+            lastFetchTime = null;
+            
+            const statusElement = document.getElementById('autoFetchStatus');
+            const t = translations[currentLang];
+            statusElement.innerHTML = `
+                <span class="bg-red-500 rounded-full w-3 h-3 inline-block mr-2"></span>
+                <span>${t.inactive_status}</span>
+            `;
+            
+            Swal.fire({
+                icon: 'info',
+                title: t.info_fetch_stop_title,
+                timer: 1500
+            });
+        }
+    }
+    
+    // Fonction pour rÃ©cupÃ©rer le dernier coefficient avec contrÃ´le des doublons
+    async function fetchLatestCoefficient() {
+        const coefficient = await fetchStopCoefficient();
+        if (coefficient === null) return;
+        
+        const now = Date.now();
+        const adjustedCoefficient = coefficient === 1.00 ? 1.01 : coefficient;
+        const roundedCoefficient = parseFloat(adjustedCoefficient.toFixed(2));
+        
+        // VÃ©rifier si le coefficient est identique au prÃ©cÃ©dent et dans un intervalle < 7s
+        if (lastCoefficient === roundedCoefficient && lastFetchTime && (now - lastFetchTime) < 7000) {
+            showDuplicateWarning();
+            return;
+        }
+        
+        // Mettre Ã  jour les variables de contrÃ´le
+        lastCoefficient = roundedCoefficient;
+        lastFetchTime = now;
+        
+        autoCoefficients.push(roundedCoefficient);
+        updateCoefficientsDisplay();
+        document.getElementById('oddsInput').value = autoCoefficients.join(', ');
+        
+        // Ajouter Ã  l'analyse de tendance
+        trendAnalysis.push(roundedCoefficient);
+        if (trendAnalysis.length > 10) trendAnalysis.shift();
+        
+        // VÃ©rification des prÃ©dictions en attente
+        verifyPendingPredictions(roundedCoefficient);
+        
+        // Si 5 coefficients, dÃ©clencher la prÃ©diction
+        if (autoCoefficients.length >= 5) {
+            predictOdds(true);
+            
+            setTimeout(() => {
+                autoCoefficients = [];
+                updateCoefficientsDisplay();
+                document.getElementById('oddsInput').value = '';
+            }, 1000);
+        }
+    }
+    
+    function showDuplicateWarning() {
+        const displayElement = document.getElementById('coefficientsDisplay');
+        const t = translations[currentLang];
+
+        // Supprimer l'avertissement existant s'il y en a un
+        const existingWarning = displayElement.querySelector('.duplicate-warning');
+        if (existingWarning) {
+            clearTimeout(duplicateWarningTimeout);
+            existingWarning.parentNode.removeChild(existingWarning);
+        }
+
+        const warningElement = document.createElement('div');
+        warningElement.className = 'duplicate-warning';
+        warningElement.innerHTML = `
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            ${t.warning_duplicate}
+        `;
+        displayElement.appendChild(warningElement);
+        
+        // Supprimer l'avertissement aprÃ¨s 3 secondes
+        duplicateWarningTimeout = setTimeout(() => {
+            if (warningElement.parentNode) {
+                warningElement.parentNode.removeChild(warningElement);
+            }
+        }, 3000);
+    }
+    
+    // VÃ©rification des prÃ©dictions en attente
+    function verifyPendingPredictions(newCoefficient) {
+        const updatedPending = [];
+        const t = translations[currentLang];
+        
+        for (const pending of pendingVerification) {
+            const predictionIndex = predictionHistory.findIndex(p => p.id === pending.id);
+            if (predictionIndex === -1) continue; 
+
+            // VÃ©rifier si le nouveau coefficient valide la prÃ©diction
+            if (newCoefficient >= pending.predictedOdds) {
+                // SuccÃ¨s - mettre Ã  jour la prÃ©diction
+                predictionHistory[predictionIndex].verificationStatus = 'success';
+                predictionHistory[predictionIndex].verifiedRound = pending.currentRound;
+                predictionHistory[predictionIndex].status = 'success';
+                predictionHistory[predictionIndex].round = pending.currentRound;
+                localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
+                updatePredictionHistory();
+                updateStatistics();
+                
+                // Afficher notification
+                Swal.fire({
+                    icon: 'success',
+                    title: t.success_prediction_validated_title,
+                    html: t.success_prediction_validated_text.replace('$1', pending.predictedOdds).replace('$2', pending.currentRound),
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+            } else {
+                // IncrÃ©menter le round
+                pending.currentRound++;
+                
+                // VÃ©rifier si on a dÃ©passÃ© le nombre de rounds Ã  vÃ©rifier
+                if (pending.currentRound <= 5) {
+                    updatedPending.push(pending);
+                    
+                    // Mettre Ã  jour l'historique
+                    updatePredictionHistory();
+                } else {
+                    // Ã‰chec aprÃ¨s 5 rounds
+                    predictionHistory[predictionIndex].verificationStatus = 'failed';
+                    predictionHistory[predictionIndex].status = 'failed';
+                    
+                    localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
+                    updatePredictionHistory();
+                    updateStatistics();
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: t.error_prediction_failed_title,
+                        html: t.error_prediction_failed_text.replace('$1', pending.predictedOdds),
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
+            }
+        }
+        
+        pendingVerification = updatedPending;
+    }
+    
+    // Fonction pour mettre Ã  jour l'affichage des coefficients
+    function updateCoefficientsDisplay() {
+        const displayElement = document.getElementById('coefficientsDisplay');
+        const t = translations[currentLang];
+        
+        if (autoCoefficients.length === 0) {
+            displayElement.innerHTML = `<p class="text-center text-gray-500">${t.coefficients_initial}</p>`;
+            return;
+        }
+        
+        const remainingCoeffs = 5 - autoCoefficients.length;
+        const remainingMessage = t.coeffs_remaining.replace('$1', remainingCoeffs);
+        
+        displayElement.innerHTML = `
+            <div class="flex flex-wrap justify-center">
+                ${autoCoefficients.map(coef => `
+                    <div class="coefficient-badge">${coef}</div>
+                `).join('')}
+            </div>
+            <div class="text-center mt-3 text-sm text-gray-600">
+                ${remainingMessage}
+            </div>
+        `;
+    }
+
+    // Fonction de prÃ©diction amÃ©liorÃ©e
+    function predictOdds(autoTriggered = false) {
+        const settings = JSON.parse(localStorage.getItem('predictionSettings')) || {
+            analysisMode: 'pro',
+            excludeExtremes: true,
+            trendAnalysis: true,
+            volatilityThreshold: 0.15
+        };
+
+        const oddsInput = document.getElementById('oddsInput').value;
+        const betAmount = parseFloat(document.getElementById('betAmount').value) || 0;
+        const t = translations[currentLang];
+        
+        let oddsArray = oddsInput.split(',')
+            .map(odd => parseFloat(odd.trim()))
+            .filter(odd => !isNaN(odd) && odd > 1);
+
+        if (oddsArray.length < 3) {
+            Swal.fire({
+                icon: 'error',
+                title: t.error_data_insufficient_title,
+                text: t.error_data_insufficient_text,
+                confirmButtonColor: '#3B82F6'
+            });
+            return;
+        }
+
+        if (settings.excludeExtremes) {
+            oddsArray.sort((a, b) => a - b);
+            // Exclure seulement le plus bas et le plus haut
+            oddsArray = oddsArray.slice(1, -1);
+        }
+
+        // Calculer la moyenne mobile exponentielle (EMA)
+        const calculateEMA = (data, smoothing = 0.2) => {
+            let ema = [data[0]];
+            for (let i = 1; i < data.length; i++) {
+                ema.push(data[i] * smoothing + ema[i-1] * (1 - smoothing));
+            }
+            return ema;
+        };
+
+        // Calculer la volatilitÃ©
+        const calculateVolatility = (data) => {
+            const mean = data.reduce((a, b) => a + b, 0) / data.length;
+            const deviations = data.map(val => Math.pow(val - mean, 2));
+            const variance = deviations.reduce((a, b) => a + b, 0) / data.length;
+            return Math.sqrt(variance);
+        };
+
+        // Calculer la tendance
+        const calculateTrend = (data) => {
+            if (data.length < 2) return 'stable';
+            const last = data[data.length - 1];
+            const prev = data[data.length - 2];
+            return last > prev ? 'up' : last < prev ? 'down' : 'stable';
+        };
+
+        // DÃ©tecter les motifs dans les donnÃ©es
+        const detectPattern = (data) => {
+            if (data.length < 3) return 'neutral';
+            
+            const lastThree = data.slice(-3);
+            // DÃ©tecter un motif ascendant
+            if (lastThree[0] < lastThree[1] && lastThree[1] < lastThree[2]) {
+                return 'bullish';
+            }
+            // DÃ©tecter un motif descendant
+            if (lastThree[0] > lastThree[1] && lastThree[1] > lastThree[2]) {
+                return 'bearish';
+            }
+            return 'neutral';
+        };
+
+        // Calculs statistiques avancÃ©s
+        const mean = oddsArray.reduce((a, b) => a + b, 0) / oddsArray.length;
+        const volatility = calculateVolatility(oddsArray);
+        const ema = calculateEMA(oddsArray);
+        const emaValue = ema[ema.length - 1];
+        const trend = calculateTrend(oddsArray);
+        const pattern = detectPattern(oddsArray);
+
+        // Facteur de confiance basÃ© sur la volatilitÃ©
+        const confidenceFactor = Math.max(0.1, 1 - (volatility * 2));
+        const confidencePercentage = Math.round(confidenceFactor * 100);
+
+        // Calcul de la prÃ©diction finale avec pondÃ©ration
+        let prediction;
+        switch(settings.analysisMode) {
+            case 'advanced':
+                const weights = oddsArray.map((_, i) => 1 + (i * 0.1));
+                const weightedSum = oddsArray.reduce((acc, curr, i) => acc + (curr * weights[i]), 0);
+                const weightSum = weights.reduce((acc, curr) => acc + curr, 0);
+                prediction = weightedSum / weightSum;
+                break;
+            case 'pro':
+                // PondÃ©ration: 60% EMA, 30% moyenne, 10% dernier coefficient
+                prediction = (emaValue * 0.6) + (mean * 0.3) + (oddsArray[oddsArray.length - 1] * 0.1);
+                // Ajustement basÃ© sur la tendance
+                if (trend === 'up') prediction *= 1.05;
+                if (trend === 'down') prediction *= 0.97;
+                break;
+            default:
+                prediction = mean;
+        }
+
+        // Ajustement final basÃ© sur la confiance
+        prediction = prediction * (1 + (confidenceFactor * 0.1));
+
+        const probabilities = oddsArray.map(odd => (1 / odd * 100).toFixed(2));
+        const potentialWin = betAmount ? (betAmount * prediction).toFixed(2) : 'N/A';
+
+        const predictionResult = {
+            id: Date.now(),
+            date: new Date().toLocaleString(currentLang), 
+            averageOdds: prediction.toFixed(2),
+            probabilities: probabilities,
+            potentialWin: potentialWin,
+            status: 'pending',
+            originalOdds: oddsArray.join(', '),
+            round: null,
+            analysisMode: settings.analysisMode,
+            verificationStatus: 'pending',
+            verifiedRound: null,
+            confidence: confidencePercentage,
+            trend: trend,
+            pattern: pattern,
+            volatility: volatility.toFixed(3)
+        };
+
+        // DÃ©terminer les rounds d'apparition et le message associÃ©
+        const proba = parseFloat(predictionResult.probabilities[0]);
+        let predictedRounds = [];
+        let roundMessage = "";
+        let accuracyClass = "";
+        let confidenceLevel = "";
+
+        // DÃ©termination basÃ©e sur la confiance et la probabilitÃ©
+        if (confidencePercentage >= 80 && proba >= 75) {
+            predictedRounds = [1, 2];
+            roundMessage = t.high_confidence_message;
+            accuracyClass = "high-accuracy";
+            confidenceLevel = currentLang === 'fr' ? "TrÃ¨s Ã©levÃ©e" : (currentLang === 'ru' ? "ÐžÑ‡ÐµÐ½ÑŒ Ð²Ñ‹ÑÐ¾ÐºÐ¾Ðµ" : (currentLang === 'hi' ? "à¤¬à¤¹à¥à¤¤ à¤‰à¤šà¥à¤š" : "Very High"));
+        } else if (confidencePercentage >= 60 && proba >= 60) {
+            predictedRounds = [1, 2, 3];
+            roundMessage = t.medium_high_confidence_message;
+            accuracyClass = "high-accuracy";
+            confidenceLevel = currentLang === 'fr' ? "Ã‰levÃ©e" : (currentLang === 'ru' ? "Ð’Ñ‹ÑÐ¾ÐºÐ¾Ðµ" : (currentLang === 'hi' ? "à¤‰à¤šà¥à¤š" : "High"));
+        } else if (confidencePercentage >= 40 && proba >= 50) {
+            predictedRounds = [2, 3, 4];
+            roundMessage = t.medium_confidence_message;
+            accuracyClass = "medium-accuracy";
+            confidenceLevel = currentLang === 'fr' ? "Moyenne" : (currentLang === 'ru' ? "Ð¡Ñ€ÐµÐ´Ð½ÐµÐµ" : (currentLang === 'hi' ? "à¤”à¤¸à¤¤" : "Average"));
+        } else if (proba < 50) {
+            predictedRounds = [3, 4, 5];
+            roundMessage = t.low_confidence_message;
+            accuracyClass = "low-accuracy";
+            confidenceLevel = currentLang === 'fr' ? "Faible" : (currentLang === 'ru' ? "ÐÐ¸Ð·ÐºÐ¾Ðµ" : (currentLang === 'hi' ? "à¤•à¤®" : "Low"));
+        } else {
+            predictedRounds = [2, 3, 4, 5];
+            roundMessage = t.moderate_confidence_message;
+            accuracyClass = "medium-accuracy";
+            confidenceLevel = currentLang === 'fr' ? "ModÃ©rÃ©e" : (currentLang === 'ru' ? "Ð£Ð¼ÐµÑ€ÐµÐ½Ð½Ð¾Ðµ" : (currentLang === 'hi' ? "à¤®à¤§à¥à¤¯à¤®" : "Moderate"));
+        }
+
+        // Ajouter les nouvelles propriÃ©tÃ©s au rÃ©sultat
+        predictionResult.predictedRounds = predictedRounds;
+        predictionResult.roundMessage = roundMessage;
+        predictionResult.accuracyClass = accuracyClass;
+        predictionResult.confidenceLevel = confidenceLevel;
+
+        predictionHistory.unshift(predictionResult);
+        localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
+        
+        // Ajouter Ã  la vÃ©rification automatique si dÃ©clenchÃ© automatiquement
+        if (autoTriggered && isAutoFetchActive) {
+            pendingVerification.push({
+                id: predictionResult.id,
+                predictedOdds: parseFloat(predictionResult.averageOdds),
+                currentRound: 1
+            });
+        }
+
+        updatePredictionDisplay(predictionResult);
+        updatePredictionHistory();
+        updateStatistics();
+        updateStatsChart();
+        analyzeHistoricalData();
+
+        document.getElementById('oddsInput').value = '';
+        document.getElementById('betAmount').value = '';
+
+        Swal.fire({
+            icon: 'success',
+            title: t.success_prediction_generated_title,
+            html: `
+                <div class="text-left">
+                    <p>${t.predicted_odds}: <strong>${predictionResult.averageOdds}</strong></p>
+                    <p>${t.confidence_label}: <strong>${predictionResult.confidenceLevel}</strong></p>
+                    <p class="text-sm text-gray-600">${t.options_analysis_mode.split(' ')[0]}: ${settings.analysisMode}</p>
+                </div>
+            `,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    }
+    
+    function updatePredictionDisplay(prediction) {
+        let roundHTML = '';
+        let adviceClass = '';
+        const t = translations[currentLang];
+        
+        // DÃ©terminer l'indicateur de tendance
+        let trendIndicator = '';
+        let trendText = '';
+        if (prediction.trend === 'up') {
+            trendText = t.trend_up;
+            trendIndicator = `<span class="trend-indicator trend-up"><i class="fas fa-arrow-up mr-1"></i> ${trendText}</span>`;
+        } else if (prediction.trend === 'down') {
+            trendText = t.trend_down;
+            trendIndicator = `<span class="trend-indicator trend-down"><i class="fas fa-arrow-down mr-1"></i> ${trendText}</span>`;
+        } else {
+            trendText = t.trend_stable;
+            trendIndicator = `<span class="trend-indicator trend-stable"><i class="fas fa-arrows-alt-h mr-1"></i> ${trendText}</span>`;
+        }
+        
+        // DÃ©terminer le motif dÃ©tectÃ©
+        let patternIndicator = '';
+        let patternText = '';
+        if (prediction.pattern === 'bullish') {
+            patternText = t.pattern_bullish;
+            patternIndicator = `<span class="pattern-indicator pattern-bullish">${patternText}</span>`;
+        } else if (prediction.pattern === 'bearish') {
+            patternText = t.pattern_bearish;
+            patternIndicator = `<span class="pattern-indicator pattern-bearish">${patternText}</span>`;
+        } else {
+            patternText = t.pattern_neutral;
+            patternIndicator = `<span class="pattern-indicator pattern-neutral">${patternText}</span>`;
+        }
+        
+        if (prediction.predictedRounds && prediction.predictedRounds.length > 0) {
+            if (prediction.accuracyClass === "high-accuracy") {
+                adviceClass = "bg-green-100 text-green-800";
+            } else if (prediction.accuracyClass === "medium-accuracy") {
+                adviceClass = "bg-yellow-100 text-yellow-800";
+            } else {
+                adviceClass = "bg-red-100 text-red-800";
+            }
+            
+            roundHTML = `
+                <div class="predicted-rounds-container">
+                    <div class="text-center font-bold text-lg text-blue-700 mb-3">${t.predicted_rounds_title}</div>
+                    <div class="text-center">
+                        ${prediction.predictedRounds.map(round => `
+                            <span class="round-badge">${round}</span>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="mt-4 p-3 rounded-lg ${adviceClass}">
+                        ${prediction.roundMessage}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">${t.confidence_label}</span>
+                            <span class="text-sm font-medium text-gray-700">${prediction.confidence}%</span>
+                        </div>
+                        <div class="confidence-level w-full rounded-full h-2.5 bg-gray-200">
+                            <div class="confidence-fill h-2.5 rounded-full" style="width: ${prediction.confidence}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <div>
+                            <span class="text-sm text-gray-700">${t.trend_label}: </span>
+                            ${trendIndicator}
+                        </div>
+                        <div>
+                            ${patternIndicator}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2 text-xs text-gray-600">
+                        ${t.volatility_label}: ${prediction.volatility}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Statut de vÃ©rification
+        let verificationStatus = '';
+        if (prediction.verificationStatus === 'pending') {
+            const pendingInfo = pendingVerification.find(p => p.id === prediction.id);
+            const currentRound = pendingInfo ? pendingInfo.currentRound : 1;
+            
+            verificationStatus = `
+                <div class="verification-status verification-in-progress mt-4">
+                    <i class="fas fa-sync-alt fa-spin mr-2"></i>
+                    ${t.verification_pending_text.replace('$1', currentRound)}
+                </div>
+            `;
+        } else if (prediction.verificationStatus === 'success') {
+            verificationStatus = `
+                <div class="verification-status verification-success mt-4">
+                    ${t.verification_success_text.replace('$1', prediction.verifiedRound)}
+                </div>
+            `;
+        } else if (prediction.verificationStatus === 'failed') {
+            verificationStatus = `
+                <div class="verification-status verification-failed mt-4">
+                    ${t.verification_failed_text}
+                </div>
+            `;
+        }
+        
+        document.getElementById('result').innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <span class="text-sm text-gray-600 block mb-1">${t.predicted_odds}</span>
+                    <p class="text-3xl font-bold text-blue-600">${prediction.averageOdds}</p>
+                </div>
+                
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <span class="text-sm text-gray-600 block mb-1">${t.success_probability}</span>
+                    <p class="text-3xl font-bold text-green-600">${prediction.probabilities[0]}%</p>
+                </div>
+                
+                ${prediction.potentialWin !== 'N/A' ? `
+                <div class="col-span-full text-center p-4 bg-purple-50 rounded-lg mt-2">
+                    <span class="text-sm text-gray-600 block mb-1">${t.potential_win}</span>
+                    <p class="text-2xl font-bold text-purple-600">${prediction.potentialWin} â‚¬</p>
+                </div>` : ''}
+            </div>
+            ${roundHTML}
+            ${verificationStatus}
+        `;
+    }
+    
+    function updatePredictionHistory() {
+        const historyContainer = document.getElementById('predictionHistory');
+        const t = translations[currentLang];
+        
+        historyContainer.innerHTML = predictionHistory.map((prediction) => {
+            const isPendingVerification = pendingVerification.some(p => p.id === prediction.id);
+            const pendingInfo = pendingVerification.find(p => p.id === prediction.id);
+            
+            let statusBadge;
+            if (prediction.status === 'pending') {
+                statusBadge = `<span class="status-badge status-pending">${t.pending_stat}</span>`;
+            } else if (prediction.status === 'success') {
+                statusBadge = `<span class="status-badge status-success">${t.validated_stat}</span>`;
+            } else {
+                statusBadge = `<span class="status-badge status-failed">${t.failed_stat}</span>`;
+            }
+
+            let verificationBlock = '';
+            if (isPendingVerification) {
+                verificationBlock = `
+                    <div class="mt-3 text-xs bg-orange-50 text-orange-800 p-2 rounded-lg">
+                        <i class="fas fa-sync-alt fa-spin mr-1"></i>
+                        ${t.verification_pending_text.replace('$1', pendingInfo.currentRound)}
+                    </div>
+                `;
+            } else if (prediction.verificationStatus === 'success') {
+                verificationBlock = `
+                    <div class="mt-3 text-xs bg-green-50 text-green-800 p-2 rounded-lg">
+                        ${t.verification_success_text.replace('$1', prediction.verifiedRound)}
+                    </div>
+                `;
+            } else if (prediction.verificationStatus === 'failed') {
+                verificationBlock = `
+                    <div class="mt-3 text-xs bg-red-50 text-red-800 p-2 rounded-lg">
+                        ${t.verification_failed_text}
+                    </div>
+                `;
+            }
+
+            return `
+            <div class="history-item bg-white border border-gray-200 p-4 rounded-xl">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-semibold text-gray-800">${new Date(prediction.date).toLocaleString(currentLang)}</p>
+                                <p class="text-sm text-gray-600">
+                                    ${t.predicted_odds.split(' ')[0]}: <span class="font-bold text-blue-600">${prediction.averageOdds}</span> 
+                                    <span class="ml-2">(${prediction.probabilities[0]}%)</span>
+                                </p>
+                            </div>
+                            <div>
+                                ${statusBadge}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2 text-xs">
+                            <span class="text-gray-600">${t.confidence_label.split(' ')[0]}: </span>
+                            <span class="font-semibold">${prediction.confidenceLevel}</span>
+                        </div>
+                        
+                        ${prediction.predictedRounds ? `
+                            <div class="mt-3">
+                                <p class="text-xs text-gray-500 mb-1">${t.predicted_rounds_title}:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    ${prediction.predictedRounds.map(r => `
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                            ${r}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${verificationBlock}
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+    
+    function updateStatistics() {
+        const total = predictionHistory.length;
+        const success = predictionHistory.filter(p => p.status === 'success').length;
+        const failed = predictionHistory.filter(p => p.status === 'failed').length;
+        const pending = predictionHistory.filter(p => p.status === 'pending').length;
+        
+        const accuracy = total > 0 
+            ? ((success / total) * 100).toFixed(1)
+            : '0';
+
+        document.getElementById('totalPredictions').textContent = total;
+        document.getElementById('predictionAccuracy').textContent = accuracy + '%';
+        document.getElementById('successCount').textContent = success;
+        document.getElementById('failedCount').textContent = failed;
+        document.getElementById('pendingCount').textContent = pending;
+    }
+
+    function updateStatsChart() {
+        const ctx = document.getElementById('statsChart').getContext('2d');
+        const t = translations[currentLang];
+        
+        if (statsChart) statsChart.destroy();
+
+        const completedPredictions = predictionHistory.filter(p => p.status !== 'pending').reverse();
+        
+        statsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: completedPredictions.map((_, index) => `${t.predicted_odds.split(' ')[0]} #${index + 1}`),
+                datasets: [{
+                    label: t.odds_label.split(' ')[0] === 'CÃ´tes' ? 'CÃ´tes Moyennes' : 'Average Odds',
+                    data: completedPredictions.map(p => parseFloat(p.averageOdds)),
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: t.chart_title
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    }
+    
+    function openAdvancedSettings() {
+        const currentSettings = JSON.parse(localStorage.getItem('predictionSettings')) || {
+            analysisMode: 'pro',
+            excludeExtremes: true,
+            trendAnalysis: true,
+            volatilityThreshold: 0.15
+        };
+        const t = translations[currentLang];
+
+        Swal.fire({
+            title: t.options_btn,
+            html: `
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="text-left">
+                        <label class="block text-gray-700 mb-2">${t.options_analysis_mode}</label>
+                        <select id="analysisMode" class="w-full p-3 border border-gray-300 rounded-lg">
+                            <option value="standard" ${currentSettings.analysisMode === 'standard' ? 'selected' : ''}>
+                                ${t.options_mode_standard}
+                            </option>
+                            <option value="advanced" ${currentSettings.analysisMode === 'advanced' ? 'selected' : ''}>
+                                ${t.options_mode_advanced}
+                            </option>
+                            <option value="pro" ${currentSettings.analysisMode === 'pro' ? 'selected' : ''}>
+                                ${t.options_mode_pro}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="text-left">
+                        <label class="block text-gray-700 mb-2">${t.options_analysis_options}</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-2 bg-gray-50 rounded-lg">
+                                <input type="checkbox" id="excludeExtremes" class="mr-2 h-5 w-5" 
+                                    ${currentSettings.excludeExtremes ? 'checked' : ''}>
+                                ${t.options_exclude_extremes}
+                            </label>
+                            <label class="flex items-center p-2 bg-gray-50 rounded-lg">
+                                <input type="checkbox" id="trendAnalysis" class="mr-2 h-5 w-5"
+                                    ${currentSettings.trendAnalysis ? 'checked' : ''}>
+                                ${t.options_trend_analysis}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <label class="block text-gray-700 mb-2">${t.options_volatility_threshold}</label>
+                        <input type="range" id="volatilityThreshold" min="0.05" max="0.5" step="0.01" 
+                            value="${currentSettings.volatilityThreshold}" class="w-full">
+                        <div class="text-center text-sm text-gray-600 mt-1" id="volatilityValue">
+                            ${currentSettings.volatilityThreshold}
+                        </div>
+                    </div>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: t.options_save,
+            cancelButtonText: t.options_cancel,
+            confirmButtonColor: '#3B82F6',
+            cancelButtonColor: '#EF4444',
+            didOpen: () => {
+                const slider = document.getElementById('volatilityThreshold');
+                const valueDisplay = document.getElementById('volatilityValue');
+                slider.addEventListener('input', () => {
+                    valueDisplay.textContent = slider.value;
+                });
+            },
+            preConfirm: () => {
+                const settings = {
+                    analysisMode: document.getElementById('analysisMode').value,
+                    excludeExtremes: document.getElementById('excludeExtremes').checked,
+                    trendAnalysis: document.getElementById('trendAnalysis').checked,
+                    volatilityThreshold: parseFloat(document.getElementById('volatilityThreshold').value)
+                };
+                localStorage.setItem('predictionSettings', JSON.stringify(settings));
+                return settings;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    title: t.options_saved,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        });
+    }
+    
+    function analyzeHistoricalData() {
+        const successfulPredictions = predictionHistory.filter(p => p.status === 'success');
+        const t = translations[currentLang];
+        const totalPredictions = predictionHistory.length;
+
+        if (successfulPredictions.length === 0) {
+            document.getElementById('intelligentAnalysis').innerHTML = `
+                <div class="text-center text-gray-500 p-4">
+                    <i class="fas fa-database text-3xl text-gray-400 mb-3"></i>
+                    <p>${t.analysis_initial.includes('Actualiser') ? "Pas encore assez de donnÃ©es pour l'analyse" : t.analysis_initial.replace('Click Refresh to analyze data', 'Not enough data for analysis yet')}</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Calculer la moyenne des confiances des prÃ©dictions rÃ©ussies
+        const avgConfidence = successfulPredictions.reduce((sum, p) => sum + p.confidence, 0) / successfulPredictions.length;
+        
+        // Trouver la plage de cÃ´tes la plus rÃ©ussie
+        const oddsRanges = {
+            '1.0-1.5': 0,
+            '1.5-2.0': 0,
+            '2.0-2.5': 0,
+            '2.5+': 0
+        };
+        
+        successfulPredictions.forEach(p => {
+            const odds = parseFloat(p.averageOdds);
+            if (odds <= 1.5) oddsRanges['1.0-1.5']++;
+            else if (odds <= 2.0) oddsRanges['1.5-2.0']++;
+            else if (odds <= 2.5) oddsRanges['2.0-2.5']++;
+            else oddsRanges['2.5+']++;
+        });
+        
+        // Trouver la plage la plus performante
+        let bestRange = '';
+        let maxCount = 0;
+        for (const [range, count] of Object.entries(oddsRanges)) {
+            if (count > maxCount) {
+                maxCount = count;
+                bestRange = range;
+            }
+        }
+        
+        // Trouver la confiance moyenne des prÃ©dictions rÃ©ussies
+        const avgSuccessConfidence = Math.round(avgConfidence);
+        
+        document.getElementById('intelligentAnalysis').innerHTML = `
+            <div class="space-y-4">
+                <div class="p-3 bg-blue-50 rounded-lg">
+                    <div class="font-bold text-blue-800 mb-2">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        ${t.perf_title}
+                    </div>
+                    <p class="text-blue-600">
+                        ${t.perf_success_rate}: <span class="font-bold">${((successfulPredictions.length / totalPredictions) * 100).toFixed(1)}%</span>
+                    </p>
+                    <p class="text-blue-600 text-sm mt-1">
+                        ${t.perf_avg_confidence}: <span class="font-bold">${avgSuccessConfidence}%</span>
+                    </p>
+                </div>
+                
+                <div class="p-3 bg-green-50 rounded-lg">
+                    <div class="font-bold text-green-800 mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        ${t.best_odds_title}
+                    </div>
+                    <p class="text-green-600">
+                        ${t.best_odds_optimal_range}: <span class="font-bold">${bestRange}</span>
+                    </p>
+                    <div class="mt-2">
+                        <p class="text-xs text-gray-600 mb-1">${t.best_odds_distribution}:</p>
+                        <div class="space-y-1">
+                            <div class="flex items-center">
+                                <span class="text-xs w-16">1.0-1.5:</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${(oddsRanges['1.0-1.5'] / successfulPredictions.length) * 100}%"></div>
+                                </div>
+                                <span class="text-xs w-8 text-right">${oddsRanges['1.0-1.5']}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-xs w-16">1.5-2.0:</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${(oddsRanges['1.5-2.0'] / successfulPredictions.length) * 100}%"></div>
+                                </div>
+                                <span class="text-xs w-8 text-right">${oddsRanges['1.5-2.0']}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-xs w-16">2.0-2.5:</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${(oddsRanges['2.0-2.5'] / successfulPredictions.length) * 100}%"></div>
+                                </div>
+                                <span class="text-xs w-8 text-right">${oddsRanges['2.0-2.5']}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-xs w-16">2.5+:</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${(oddsRanges['2.5+'] / successfulPredictions.length) * 100}%"></div>
+                                </div>
+                                <span class="text-xs w-8 text-right">${oddsRanges['2.5+']}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-purple-50 rounded-lg">
+                    <div class="font-bold text-purple-800 mb-2">
+                        <i class="fas fa-history mr-2"></i>
+                        ${t.historical_analysis_title}
+                    </div>
+                    <p class="text-purple-600">
+                        ${t.historical_summary.replace('$1', `<strong>${successfulPredictions.length}</strong>`).replace('$2', `<strong>${totalPredictions}</strong>`)}
+                    </p>
+                </div>
+            </div>
+        `;
+    }
+
+    function toggleHistoryVisibility() {
+        const historyContainer = document.getElementById('predictionHistory');
+        const toggleButton = document.getElementById('toggleHistory');
+        const t = translations[currentLang];
+        isHistoryVisible = !isHistoryVisible;
+        
+        if (isHistoryVisible) {
+            historyContainer.style.display = 'block';
+            toggleButton.textContent = t.hide_btn;
+            toggleButton.classList.remove('bg-green-500');
+            toggleButton.classList.add('bg-blue-500');
+        } else {
+            historyContainer.style.display = 'none';
+            toggleButton.textContent = t.show_btn;
+            toggleButton.classList.remove('bg-blue-500');
+            toggleButton.classList.add('bg-green-500');
+        }
+    }
+</script>
+</body>
+</html>
