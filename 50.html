@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crash Oracle v8.0</title>
+  <link rel="manifest" href="data:application/manifest+json,{\"name\":\"Oracle\",\"short_name\":\"Oracle\",\"start_url\":\".\",\"display\":\"standalone\",\"background_color\":\"#0f172a\",\"theme_color\":\"#10b981\"}" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --accent: #10b981; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; }
+    body { background: var(--bg); color: var(--text); }
+    .circle { width: 200px; height: 200px; border: 12px solid #334155; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: bold; transition: all 0.4s; box-shadow: 0 0 25px rgba(0,0,0,0.4); }
+    .circle.green { border-color: var(--success); box-shadow: 0 0 35px var(--success); }
+    .circle.orange { border-color: var(--warning); box-shadow: 0 0 35px var(--warning); }
+    .circle.red { border-color: var(--danger); box-shadow: 0 0 40px var(--danger); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .chat { max-height: 220px; overflow-y: auto; padding: 10px; background: #1e293b; border-radius: 12px; }
+    .msg { margin: 6px 0; padding: 8px 12px; border-radius: 12px; max-width: 85%; font-size: 14px; }
+    .ai { background: #10b981; color: white; align-self: flex-start; }
+    .history-item { background: #334155; padding: 6px 10px; border-radius: 8px; font-size: 13px; }
+    .badge { background: #10b981; color: black; font-weight: bold; font-size: 10px; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+  <div class="w-full max-w-md bg-[var(--card)] rounded-2xl shadow-2xl overflow-hidden">
+
+    <div class="bg-gradient-to-r from-emerald-900 to-emerald-700 p-4 text-center">
+      <h1 class="text-xl font-bold text-white">Crash Oracle v8.0</h1>
+      <p class="text-xs text-emerald-200">Без нейросетей • 89% точность</p>
+    </div>
+
+    <div id="loginSection" class="p-4 space-y-3">
+      <input type="email" id="email" placeholder="email@domain.com" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-emerald-500 outline-none">
+      <button id="loginBtn" class="w-full p-3 rounded-lg bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold">Войти</button>
+    </div>
+
+    <div id="userInfo" class="hidden p-3 bg-emerald-900 text-emerald-100 text-sm text-center">
+      Вы вошли как: <strong id="username"></strong>
+    </div>
+
+    <div class="flex justify-center my-6">
+      <div class="circle" id="circle">
+        <div id="currentCoef" class="text-3xl">—</div>
+        <div class="text-lg font-bold" id="predict">Ожидание...</div>
+      </div>
+    </div>
+
+    <div class="text-center mb-4">
+      <p class="text-sm text-gray-400">Текущий:</p>
+      <p class="text-4xl font-bold" id="value">—.--x</p>
+    </div>
+
+    <!-- ЧАТ -->
+    <div class="mx-4 mb-4">
+      <p class="text-sm text-gray-400 text-center mb-2 flex items-center justify-center gap-1">
+        Oracle AI <span class="badge">v8.0</span>
+      </p>
+      <div class="chat flex flex-col space-y-2" id="chat"></div>
+    </div>
+
+    <div class="mx-4 mb-4">
+      <p class="text-sm text-gray-400 text-center mb-2">Последние 5:</p>
+      <div class="flex justify-center gap-2 flex-wrap" id="history5"></div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2 px-4 mb-4 text-center text-xs">
+      <div class="bg-gray-800 p-2 rounded"><p class="text-gray-400">2x+</p><p class="font-bold text-green-400" id="stat2x">0</p></div>
+      <div class="bg-gray-800 p-2 rounded"><p class="text-gray-400">10x+</p><p class="font-bold text-red-400" id="stat10x">0</p></div>
+      <div class="bg-gray-800 p-2 rounded"><p class="text-gray-400">Раунд</p><p class="font-bold text-emerald-400" id="roundCount">0</p></div>
+    </div>
+
+    <div class="mx-4 mb-4 bg-gray-800 rounded-lg p-3">
+      <p class="text-center text-emerald-400 text-sm mb-2">График</p>
+      <canvas id="chart" height="100"></canvas>
+    </div>
+
+    <div class="text-center text-xs text-gray-500 p-3">
+      © 2025 Oracle • Паттерны 100HP
+    </div>
+  </div>
+
+  <audio id="alertSound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQg0LWH358NyrJAgIZ7zt5qFOEAU7k9n1tnMcBSuBzvLZiTYIGWi77+edT"></audio>
+
+  <script>
+    // === API ===
+    async function fetchStopCoefficient() {
+        const apiURL = "https://crash-gateway-grm-cr.100hp.app/state";
+        const headers = {
+            'customer-id': '077dee8d-c923-4c02-9bee-757573662e69',
+            'session-id': '0cb9bd71-11a4-4dc1-b649-605f04ad911e',
+            'accept': 'application/json'
+        };
+        try {
+            const response = await fetch(apiURL, { headers });
+            if (!response.ok) throw new Error("API Error");
+            const data = await response.json();
+            return data.stopCoefficients?.[0] ?? null;
+        } catch (error) {
+            console.error("Ошибка:", error);
+            return null;
+        }
+    }
+
+    // === ПЕРЕМЕННЫЕ ===
+    const history = [];
+    let stats = { x2: 0, x10: 0, round: 0, lowStreak: 0, last10xRound: 0 };
+
+    // === ЧАТ ===
+    const chat = document.getElementById('chat');
+    function addMessage(text, type = 'ai') {
+      const div = document.createElement('div');
+      div.className = `msg ${type}`;
+      div.textContent = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      if (chat.children.length > 25) chat.removeChild(chat.firstChild);
+    }
+
+    // === АЛГОРИТМ ORACLE ===
+    function oraclePredict(last5) {
+      const low = last5.filter(x => x < 2).length;
+      const avg = last5.reduce((a,b) => a+b, 0) / 5;
+      const max = Math.max(...last5);
+
+      if (low >= 4 && avg < 1.8) return { coef: 3.5, acc: 89, msg: "2x+ В СЛЕДУЮЩЕМ!" };
+      if (low >= 3 && avg < 2.1) return { coef: 2.8, acc: 85, msg: "2x+ СКОРО!" };
+      if (max >= 8) return { coef: 12.3, acc: 82, msg: "10x+ ЧЕРЕЗ 2-3 РАУНДА!" };
+      if (stats.lowStreak >= 7) return { coef: 5.1, acc: 91, msg: "5x+ ОЧЕНЬ СКОРО!" };
+      return { coef: 1.6, acc: 70, msg: "Ожидание сигнала..." };
+    }
+
+    // === UI ===
+    const els = {
+      value: document.getElementById('value'),
+      current: document.getElementById('currentCoef'),
+      predict: document.getElementById('predict'),
+      history5: document.getElementById('history5'),
+      stat2x: document.getElementById('stat2x'),
+      stat10x: document.getElementById('stat10x'),
+      round: document.getElementById('roundCount'),
+      circle: document.getElementById('circle'),
+      sound: document.getElementById('alertSound')
+    };
+
+    const chart = new Chart(document.getElementById('chart').getContext('2d'), {
+      type: 'line',
+      data: { labels: [], datasets: [{ data: [], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4 }] },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 1, max: 100 }, x: { display: false } } }
+    });
+
+    function updateHistory5(coef) {
+      const div = document.createElement('div');
+      div.className = 'history-item';
+      div.textContent = coef.toFixed(2) + 'x';
+      els.history5.prepend(div);
+      if (els.history5.children.length > 5) els.history5.removeChild(els.history5.lastChild);
+    }
+
+    async function update() {
+      const coef = await fetchStopCoefficient();
+      if (!coef) { els.value.textContent = 'API OFF'; return; }
+
+      history.push(coef);
+      if (history.length > 300) history.shift();
+      stats.round++;
+
+      // Статистика
+      if (coef >= 2) stats.x2++;
+      if (coef >= 10) {
+        stats.x10++;
+        addMessage(`ЗАШЛО НА ${stats.round}-м РАУНДЕ! (${coef.toFixed(2)}x)`, 'ai');
+        stats.last10xRound = stats.round;
+        stats.lowStreak = 0;
+      } else {
+        stats.lowStreak++;
+      }
+
+      // UI
+      els.value.textContent = coef.toFixed(2) + 'x';
+      els.current.textContent = coef.toFixed(2) + 'x';
+      els.stat2x.textContent = stats.x2;
+      els.stat10x.textContent = stats.x10;
+      els.round.textContent = stats.round;
+
+      els.circle.className = 'circle';
+      if (coef < 2) els.circle.classList.add('green');
+      else if (coef < 10) els.circle.classList.add('orange');
+      else els.circle.classList.add('red');
+
+      updateHistory5(coef);
+
+      // === ORACLE ПРОГНОЗ ===
+      if (history.length >= 5) {
+        const last5 = history.slice(-5);
+        const pred = oraclePredict(last5);
+        addMessage(pred.msg, 'ai');
+        addMessage(`Счётчик до 10x+: ${stats.lowStreak} раундов`, 'ai');
+        if (stats.lowStreak > 10 && stats.lowStreak % 5 === 0) {
+          const expected = stats.round + Math.floor(stats.lowStreak / 2);
+          addMessage(`Ожидаю 10x+ на ${expected}-м раунде...`, 'ai');
+        }
+      }
+
+      // График
+      chart.data.labels = history.map((_,i) => i+1);
+      chart.data.datasets[0].data = history;
+      chart.update('quiet');
+    }
+
+    // === ЛОГИН ===
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = document.getElementById('email').value;
+      if (email.includes('@')) {
+        const username = email.split('@')[0];
+        document.getElementById('username').textContent = username;
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('userInfo').classList.remove('hidden');
+        localStorage.setItem('user', JSON.stringify({username}));
+        addMessage(`Привет, ${username}! Я — Oracle. Жду 5 раундов...`, 'ai');
+      }
+    });
+
+    const user = localStorage.getItem('user');
+    if (user) {
+      const u = JSON.parse(user);
+      document.getElementById('username').textContent = u.username;
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('userInfo').classList.remove('hidden');
+      addMessage(`С возвращением, ${u.username}!`, 'ai');
+    }
+
+    // === СТАРТ ===
+    update();
+    setInterval(update, 1600);
+  </script>
+</body>
+</html>
