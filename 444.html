@@ -1,100 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Jet - 1win Game</title>
-    <style>
-        :root {
-            --primary-color: #8a00e1; /* Фиолетовый акцент с сайта */
-            --background-color: #1a2525; /* Темный фон, близкий к оригиналу */
-            --text-color: #ffffff; /* Белый текст */
-            --accent-dark: #6b00b3; /* Темный фиолетовый для градиента */
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--background-color);
-            background-image: radial-gradient(circle at 50% 50%, #2a3a3a 0%, #1a2525 100%); /* Градиент фона */
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .game-container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .game-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(138, 0, 225, 0.5); /* Тень с фиолетовым оттенком */
-        }
-
-        .fallback-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background: linear-gradient(45deg, var(--primary-color), var(--accent-dark));
-            color: var(--text-color);
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            border-radius: 25px;
-            box-shadow: 0 0 10px rgba(138, 0, 225, 0.7);
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .fallback-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(138, 0, 225, 1);
-            background: linear-gradient(45deg, var(--accent-dark), var(--primary-color));
-        }
-
-        @media (max-width: 768px) {
-            .fallback-button {
-                font-size: 16px;
-                padding: 8px 15px;
-            }
-
-            .game-iframe {
-                border-radius: 5px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .fallback-button {
-                font-size: 14px;
-                padding: 6px 12px;
-                top: 10px;
-                left: 10px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Lucky Jet — Расширенный анализ прогнозов</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#0b0b0b;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:20px;
+}
+#circle{
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  border:10px solid #111;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  font-size:42px;
+  font-weight:900;
+  transition:0.4s;
+}
+#circle.green{
+  border-color:#00ff66;
+  box-shadow:0 0 40px #00ff66;
+  animation:pulseGreen 1.2s infinite;
+}
+#circle.red{
+  border-color:#8b0000;
+  box-shadow:0 0 50px #8b0000;
+  animation:pulseRed 0.8s infinite;
+}
+@keyframes pulseGreen{
+  0%{box-shadow:0 0 20px #00ff66}
+  50%{box-shadow:0 0 60px #00ff66}
+  100%{box-shadow:0 0 20px #00ff66}
+}
+@keyframes pulseRed{
+  0%{box-shadow:0 0 30px #8b0000}
+  50%{box-shadow:0 0 90px #ff0000}
+  100%{box-shadow:0 0 30px #8b0000}
+}
+#coef {
+  white-space: pre-line;
+  text-align: center;
+}
+#target{font-size:22px;margin-top:8px;opacity:0.9;}
+#action{margin-top:18px;font-size:26px;font-weight:700;}
+#status{margin-top:12px;font-size:14px;opacity:0.7;}
+#chartContainer{width:90%;max-width:900px;margin-top:30px;}
+#history{margin-top:20px;width:100%;max-width:900px;}
+#history li{margin-bottom:4px;}
+</style>
 </head>
 <body>
-    <div class="game-container">
-        <iframe class="game-iframe" src="https://1wdzjb.life/casino/play/v_1winGames:LuckyJet?p=8ah5" title="Lucky Jet Game"></iframe>
-    </div>
-    <a href="https://1wdzjb.life/casino/play/v_1winGames:LuckyJet?p=8ah5" class="fallback-button" target="_blank">Open Game in New Tab</a>
+
+<div id="circle">
+  <div id="coef">—</div>
+  <div id="target">АНАЛИЗ</div>
+</div>
+<div id="action">ЖДЁМ ДАННЫЕ…</div>
+<div id="status">Раундов: 0</div>
+
+<div id="chartContainer">
+  <canvas id="statsChart"></canvas>
+</div>
+
+<ul id="history"></ul>
+
+<script>
+// ================== НАСТРОЙКИ API ==================
+const API_URL = "https://crash-gateway-grm-cr.100hp.app/state";
+const API_HEADERS = {
+  "customer-id": "077dee8d-c923-4c02-9bee-757573662e69",
+  "session-id": "14dd5ed6-64b8-47aa-9fbc-0062522ae77a",
+  "accept": "application/json"
+};
+// ===================================================
+
+let historyData = [];
+let lastRoundId = null;
+let roundsSince10x = 0;
+let intervals10x = [];
+
+const circle = document.getElementById("circle");
+const coefEl = document.getElementById("coef");
+const actionEl = document.getElementById("action");
+const statusEl = document.getElementById("status");
+const targetEl = document.getElementById("target");
+const historyEl = document.getElementById("history");
+const ctx = document.getElementById('statsChart').getContext('2d');
+let statsChart;
+
+// ================== ФУНКЦИИ ==================
+function updateChart() {
+  const labels = historyData.map((_, i)=>`Раунд ${i+1}`);
+  const probabilities = historyData.map(d=>d.probability);
+  const confidence = historyData.map(d=>d.confidence);
+  if(statsChart) statsChart.destroy();
+  statsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets:[
+        {label:'Вероятность успеха %', data:probabilities, borderColor:'cyan', fill:false},
+        {label:'Уровень уверенности %', data:confidence, borderColor:'orange', fill:false}
+      ]
+    },
+    options:{responsive:true, scales:{y:{beginAtZero:true,max:100}}}
+  });
+}
+
+function updateHistory() {
+  historyEl.innerHTML = '';
+  historyData.forEach((d,i)=>{
+    const li = document.createElement('li');
+    li.textContent = `Раунд ${i+1}: Коэф ${d.coef}x, Вероятность ${d.probability}%, Уверенность ${d.confidence}%, Стратегия ${d.strategy}`;
+    historyEl.appendChild(li);
+  });
+}
+
+function analyze() {
+  circle.className="";
+  targetEl.textContent="АНАЛИЗ";
+  if (historyData.length < 5) { 
+    actionEl.textContent = "ЖДЁМ СТАТИСТИКУ"; 
+    return; 
+  }
+
+  const last5 = historyData.slice(-5);
+  const lowCount = last5.filter(x => x.coef < 1.6).length;
+
+  let strategy = "—";
+  let recommendedBet = "—";
+
+  if (lowCount >= 3) {
+    circle.classList.add("green");
+    coefEl.textContent = `1.50x\n~${historyData[historyData.length-1].probability}%`;
+    targetEl.textContent = "ЦЕЛЬ";
+    strategy = "1.50x STRATEGY";
+    recommendedBet = `Ставка: 1.50x, шанс успеха ~${historyData[historyData.length-1].probability}%`;
+  } 
+  else if (intervals10x.length >= 3) {
+    const avg = intervals10x.reduce((a,b)=>a+b,0)/intervals10x.length;
+    if (roundsSince10x >= avg-1) {
+      circle.classList.add("red");
+      coefEl.textContent = `10x\n~${historyData[historyData.length-1].probability}%`;
+      targetEl.textContent = "ЛОВИМ";
+      strategy = "10x STRATEGY";
+      recommendedBet = `Ставка: 10x, шанс успеха ~${historyData[historyData.length-1].probability}%`;
+    }
+  } else {
+    coefEl.textContent = "—";
+    recommendedBet = "ЖДЁМ / АНАЛИЗ";
+  }
+
+  historyData[historyData.length-1].strategy = strategy;
+  actionEl.textContent = recommendedBet;
+}
+
+function simulateAIAnalysis(coef) {
+  // Простейшая имитация ИИ анализа
+  const probability = Math.min(99, Math.max(10, (100 - coef*8 + Math.random()*10))).toFixed(2);
+  const confidence = Math.min(99, Math.max(20, (50 + Math.random()*50))).toFixed(2);
+  return {probability, confidence};
+}
+
+// ================== ПОЛЛИНГ ==================
+async function poll(){
+  try{
+    const r = await fetch(API_URL,{headers:API_HEADERS});
+    const d = await r.json();
+
+    const roundId = d.roundConfig?.id;
+    const stop = d.stopCoefficients?.slice(-1)[0];
+
+    if(roundId && roundId !== lastRoundId && stop){
+      lastRoundId=roundId;
+      roundsSince10x++;
+
+      if(stop>=10){
+        intervals10x.push(roundsSince10x);
+        if(intervals10x.length>5) intervals10x.shift();
+        roundsSince10x=0;
+      }
+
+      const analysis = simulateAIAnalysis(stop);
+      historyData.push({
+        coef: stop,
+        probability: analysis.probability,
+        confidence: analysis.confidence,
+        strategy:"—"
+      });
+
+      analyze();
+      updateHistory();
+      updateChart();
+
+      statusEl.textContent=`Раундов: ${historyData.length} | Последний: ${stop.toFixed(2)}x`;
+    }
+  }catch(e){
+    actionEl.textContent="НЕТ СВЯЗИ";
+  }
+}
+
+setInterval(poll, 1200);
+poll();
+</script>
+
 </body>
 </html>
