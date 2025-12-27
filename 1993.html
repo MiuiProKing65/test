@@ -1,11 +1,213 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=https://1wdzjb.life/casino/play/v_1winGames:LuckyJet?p=8ah5">
-    <title>Перенаправление на LuckyJet</title>
+<meta charset="UTF-8">
+<title>Lucky Jet — AI PRO Аналитика</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;
+  background:#0b0b0b;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+h1{text-align:center}
+.card{
+  background:rgba(255,255,255,0.08);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:16px;
+}
+.flex{display:flex;gap:16px;flex-wrap:wrap}
+.circle{
+  width:220px;height:220px;border-radius:50%;
+  border:10px solid #222;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  font-size:36px;font-weight:900;
+}
+.circle.green{border-color:#00ff66;box-shadow:0 0 30px #00ff66}
+.small{font-size:14px;opacity:.8}
+select,input[type=range]{width:100%}
+.progress{
+  background:#222;border-radius:10px;overflow:hidden;height:18px
+}
+.bar{
+  height:100%;width:0%;background:#00ff66;transition:.4s
+}
+.history-item{
+  padding:10px;border-radius:10px;margin-bottom:8px;font-size:14px
+}
+.ok{background:rgba(0,255,100,.15)}
+.fail{background:rgba(255,50,50,.15)}
+.wait{background:rgba(255,255,255,.08)}
+.badge{display:inline-block;padding:4px 8px;border-radius:8px;margin:4px;background:#222}
+</style>
 </head>
 <body>
-    Если вас не перенаправило автоматически, <a href="https://1wdzjb.life/casino/play/v_1winGames:LuckyJet?p=8ah5">нажмите здесь</a>.
+
+<div class="container">
+<h1>🧠 Lucky Jet — AI PRO Аналитика</h1>
+
+<div class="card">
+Самая мощная нейросеть для Lucky Jet на сегодняшний день!<br>
+Прогноз за <strong>4–7 секунд</strong> до старта
+</div>
+
+<div class="flex">
+  <div class="card">
+    <div class="circle" id="circle">
+      <div id="coef">—</div>
+      <div class="small" id="circleText">Ожидание нового раунда</div>
+    </div>
+  </div>
+
+  <div class="card" style="flex:1">
+    🧠 Режим PRO:
+    <select id="mode">
+      <option value="safe">SAFE</option>
+      <option value="balance" selected>BALANCE</option>
+      <option value="aggressive">AGGRESSIVE</option>
+    </select>
+
+    <br><br>
+    🎯 Целевой коэффициент:
+    <input type="range" id="target" min="1.2" max="100" step="0.01" value="1.7">
+    <div>Выбран: <span id="targetVal">1.70</span>x</div>
+
+    <br>
+    🔔 Минимальная вероятность:
+    <input type="range" id="minProb" min="50" max="90" value="65">
+    <div>Порог: <span id="minProbVal">65</span>%</div>
+  </div>
+</div>
+
+<div class="card">
+<h3>📊 Текущий прогноз</h3>
+<div>Вероятный коэффициент: <strong id="predCoef">—</strong></div>
+<div>Вероятность успеха: <strong id="predProb">—</strong></div>
+
+<br>
+Уровень уверенности:
+<div class="progress"><div class="bar" id="confBar"></div></div>
+<div id="confText">—</div>
+
+<br>
+Прогнозируемые раунды появления:
+<div id="rounds"></div>
+</div>
+
+<div class="card">
+<h3>📜 История прогнозов</h3>
+<div id="history"></div>
+</div>
+
+</div>
+
+<script>
+const API_URL="https://crash-gateway-grm-cr.100hp.app/state";
+const API_HEADERS={
+  "customer-id":"077dee8d-c923-4c02-9bee-757573662e69",
+  "session-id":"14dd5ed6-64b8-47aa-9fbc-0062522ae77a",
+  "accept":"application/json"
+};
+
+let history=[],roundsFromSignal=0,active=false,currentSignal=null,lastId=null;
+
+const el=id=>document.getElementById(id);
+
+target.oninput=()=>el("targetVal").textContent=(+target.value).toFixed(2);
+minProb.oninput=()=>el("minProbVal").textContent=minProb.value;
+
+function analyze(){
+  if(history.length<4 || active) return;
+
+  const last4=history.slice(-4);
+  const avg=last4.reduce((a,b)=>a+b,0)/4;
+  const targetCoef=+target.value;
+
+  let prob=Math.min(90,Math.max(50,70-(Math.abs(avg-targetCoef)*12)));
+
+  if(prob < minProb.value) return;
+
+  currentSignal={
+    coef:((avg+targetCoef)/2).toFixed(2),
+    prob:prob.toFixed(2),
+    rounds:[1,2,3,4],
+    confidence:prob
+  };
+
+  active=true;
+  roundsFromSignal=0;
+
+  el("coef").textContent=currentSignal.coef+"x";
+  el("circleText").textContent="Прогноз для следующего раунда";
+  el("circle").className="circle green";
+
+  el("predCoef").textContent=currentSignal.coef+"x";
+  el("predProb").textContent=currentSignal.prob+"%";
+  el("confBar").style.width=currentSignal.confidence+"%";
+  el("confText").textContent=currentSignal.confidence+"%";
+
+  el("rounds").innerHTML=currentSignal.rounds.map(r=>`<span class="badge">${r}</span>`).join("");
+
+  if(Notification.permission==="granted"){
+    new Notification("AI PRO прогноз с высокой вероятностью");
+  }
+}
+
+async function poll(){
+  try{
+    const r=await fetch(API_URL,{headers:API_HEADERS});
+    const d=await r.json();
+    const id=d.roundConfig?.id;
+    const stop=d.stopCoefficients?.slice(-1)[0];
+    if(id && id!==lastId && stop){
+      lastId=id;
+      history.push(stop);
+
+      if(active){
+        roundsFromSignal++;
+        if(stop>=currentSignal.coef){
+          log(true,roundsFromSignal);
+          reset();
+        }else if(roundsFromSignal>=5){
+          log(false,roundsFromSignal);
+          reset();
+        }
+      }
+      analyze();
+    }
+  }catch{}
+}
+
+function log(success,round){
+  const div=document.createElement("div");
+  div.className="history-item "+(success?"ok":"fail");
+  div.innerHTML=`
+<b>${currentSignal.coef}x (${currentSignal.prob}%)</b><br>
+${success?"✔️ Подтверждено в "+round+" раунде":"☐ Провал после 5 раундов"}
+`;
+  el("history").prepend(div);
+}
+
+function reset(){
+  active=false;
+  currentSignal=null;
+  el("circle").className="circle";
+  el("coef").textContent="—";
+  el("circleText").textContent="Ожидание нового раунда";
+}
+
+if("Notification" in window) Notification.requestPermission();
+setInterval(poll,1200);
+poll();
+</script>
+
 </body>
 </html>
